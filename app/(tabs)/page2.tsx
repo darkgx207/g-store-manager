@@ -1,6 +1,6 @@
 import { Text, View } from "react-native";
 
-export default function Index() {
+export default function Page2() {
   return (
     <View
       style={{
@@ -9,7 +9,7 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      <Text>Teste</Text>
+      <Text>Teste 2</Text>
     </View>
   );
 }
