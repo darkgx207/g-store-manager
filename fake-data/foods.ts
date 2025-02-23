@@ -46,6 +46,6 @@ export const foodsList = [
         "title": "Pão de Queijo",
         "price": "0,50",
         "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere, exercitationem consectetur. Impedit esse eius tempora mollitia neque. Veniam temporibus, ipsam earum velit quam sapiente consequuntur accusamus. Consequatur et laborum est!"
-    },
+    }
 ]
 

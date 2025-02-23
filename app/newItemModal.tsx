@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { StyleSheet, Image, TouchableOpacity, TextInput, ImageURISource, Dimensions, Button, KeyboardAvoidingView, ScrollView, View } from "react-native";
+import { StyleSheet, Image, TouchableOpacity, TextInput, ImageURISource, Dimensions, Button, KeyboardAvoidingView, ScrollView, View, Alert, BackHandler,  } from "react-native";
 import * as imagePicker from 'expo-image-picker';
-import { router } from "expo-router";
+import { useDatabase } from "@/database/database";
+import { Item } from "@/database/models/Item";
 
 
 const defaultImage = require('../assets/images/img-not-found.png');
@@ -9,14 +10,47 @@ const WIDTH = Dimensions.get("screen").width;
 const HEIGHT = Dimensions.get("screen").height;
 
 export default function NewItemModal({closeModal}: {closeModal: () => void}) {
+    const sql = useDatabase();
+
     const [img, setImg] = useState<ImageURISource>();
+    const [title, setTitle] = useState('');
+    const [price, setPrice] = useState('');
+    const [desc, setDesc] = useState('');
 
-    const takePhoto = async () => {
-        const photo = await imagePicker.launchCameraAsync({quality: 1, mediaTypes: 'images'});
-        if (photo.canceled) return;
-
-        setImg({ uri: photo.assets?.[0].uri })
+    const takePhoto = () => {
+        Alert.alert("UPLOAD","Qual opção deseja utilizar", [
+            {text: "cancelar"},
+            {
+                text: "camera",
+                onPress: async () => {
+                    const photo = await imagePicker.launchCameraAsync({quality: 1, mediaTypes: 'images'});
+                    if (photo.canceled) return;
+                    setImg({ uri: photo.assets?.[0].uri })
+                }
+            },
+            {
+                text: "galeria",
+                onPress: async () => {
+                    const photo = await imagePicker.launchImageLibraryAsync({quality: 1, mediaTypes: 'images'});
+                    if (photo.canceled) return;
+                    setImg({ uri: photo.assets?.[0].uri })
+                }
+            }
+        ],{cancelable: true});
+        
     };
+
+    const saveNewItem = async () => {
+        const item: Item = {
+            description: desc,
+            title: title,
+            price: Number(price),
+            imgUri: img?.uri || ""
+        };
+
+        await sql.createItem(item);
+        closeModal();
+    }
 
     return (
         <ScrollView>
@@ -33,6 +67,8 @@ export default function NewItemModal({closeModal}: {closeModal: () => void}) {
                         textAlign="left" 
                         style= {style.input}
                         maxLength={50}
+                        value={title}
+                        onChangeText={setTitle}
                     />
 
                     <TextInput 
@@ -41,7 +77,8 @@ export default function NewItemModal({closeModal}: {closeModal: () => void}) {
                         style= {style.input}
                         maxLength={50}
                         keyboardType="decimal-pad"
-
+                        onChangeText={setPrice}
+                        value={price}
                     />
 
                     <TextInput 
@@ -49,8 +86,11 @@ export default function NewItemModal({closeModal}: {closeModal: () => void}) {
                         textAlign="left" 
                         style= {[style.input, { marginTop: 5, minHeight: 100, maxHeight: 200 }]} multiline={true} 
                         maxLength={250}
+                        value={desc}
+                        onChangeText={setDesc}
                     />
-                    <Button title="Salvar" color={"green"}/>
+
+                    <Button title="Salvar" color={"green"} onPress={saveNewItem} />
                     <Button title="Cancelar" color={"red"}  onPress={() => closeModal() }/>
                 </KeyboardAvoidingView>
             </View>
@@ -77,8 +117,8 @@ const style = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 5,
         width: WIDTH*0.8,
-        padding: 5,
-        fontSize: 25,
+        padding: 8,
+        fontSize: 20,
         textAlignVertical: 'top'
     }
 });

@@ -1,29 +1,37 @@
 import { imgBolo } from "@/assets/data/bolo";
-import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useState } from "react";
+import { BackHandler, Dimensions, Image, Modal, StyleSheet, Text, Touchable, TouchableHighlight, TouchableOpacity, View } from "react-native";
 
 interface ItemCardProps {
   imgUri: string,
   title?: string,
   description?: string,
-  price?: string
+  price?: number
 }
 
 const WIDTH = Dimensions.get('screen').width;
 
 export function ItemCard(props: ItemCardProps) {
-    const image = `data:image/png;base64,${imgBolo}`;
+
+    const [showModal, setShowModal] = useState(false);
 
     return (
-      <View style={styles.card}>
-        <View style={{ flex: 0.4 }}>
-          <Image source={{ uri: props.imgUri }} style={styles.image}/>
-        </View>
-        <View style={{ flex: 0.6 }}>
-          <Text style={styles.title}>{props.title}</Text>
-          <Text style={styles.description} ellipsizeMode="tail" numberOfLines={3}>{props.description}</Text>
-          <Text style={styles.price}>R$ {props.price}</Text>
-        </View>
+        <View style={styles.card}>
+          {/* <View style={[styles.options, {display: showModal ? 'flex':'none'}]}>
+            <Ionicons name="trash-outline" color={'white'} size={50}/>
+            <Ionicons name="create-outline" color={'white'} size={50}/>
+          </View> */}
+            <View style={{ flex: 0.4 }}>
+              <Image source={{ uri: props.imgUri }} style={styles.image}/>
+            </View>
+            <View style={{ flex: 0.6 }}>
+              <Text style={styles.title}>{props.title}</Text>
+              <Text style={styles.description} ellipsizeMode="tail" numberOfLines={3}>{props.description}</Text>
+              <Text style={styles.price}>R$ {props.price?.toFixed(2).replace('.',',')}</Text>
+            </View>
       </View>
+
     );
 }
 
@@ -37,7 +45,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     overflow: 'hidden',
     borderColor: '#000',
-    borderWidth: 1
+    borderWidth: 1,
+    position: 'relative'
   },
   title: {
     color: '#fff',
@@ -56,7 +65,10 @@ const styles = StyleSheet.create({
     textAlign: "right",
     marginRight: 12,
     fontSize: 14,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    textAlignVertical: 'bottom',
+    flex: 1,
+    marginBottom: 1
   },
   image: {
     width: '100%',
