@@ -1,43 +1,60 @@
-import { imgBolo } from "@/assets/data/bolo";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { BackHandler, Dimensions, Image, Modal, StyleSheet, Text, Touchable, TouchableHighlight, TouchableOpacity, View } from "react-native";
+import { Animated, BackHandler, Dimensions, Image, Modal, Pressable, StyleSheet, Text, TextInput, Touchable, TouchableHighlight, TouchableOpacity, View } from "react-native";
 
 interface ItemCardProps {
   imgUri: string,
   title?: string,
   description?: string,
-  price?: number
+  price?: number,
+  handlePress?: () => void,
+  selected?: boolean,
+  handleTrash?: () => void,
+  handleEdit?: () => void
 }
 
 const WIDTH = Dimensions.get('screen').width;
 
 export function ItemCard(props: ItemCardProps) {
 
-    const [showModal, setShowModal] = useState(false);
-
     return (
-        <View style={styles.card}>
-          {/* <View style={[styles.options, {display: showModal ? 'flex':'none'}]}>
-            <Ionicons name="trash-outline" color={'white'} size={50}/>
-            <Ionicons name="create-outline" color={'white'} size={50}/>
-          </View> */}
-            <View style={{ flex: 0.4 }}>
-              <Image source={{ uri: props.imgUri }} style={styles.image}/>
-            </View>
-            <View style={{ flex: 0.6 }}>
-              <Text style={styles.title}>{props.title}</Text>
-              <Text style={styles.description} ellipsizeMode="tail" numberOfLines={3}>{props.description}</Text>
-              <Text style={styles.price}>R$ {props.price?.toFixed(2).replace('.',',')}</Text>
-            </View>
-      </View>
+        <Pressable style={styles.card} onLongPress={() => { props.handlePress?.()} } delayLongPress={150}>
+          <View style={{ flex: 0.4 }}>
+            <Image source={{ uri: props.imgUri }} style={styles.image}/>
+          </View>
+          <Animated.View style={{ flex: 0.6 }}>
+            <Text style={styles.title}>{props.title}</Text>
+            <Text style={styles.description} ellipsizeMode="tail" numberOfLines={3}>{props.description}</Text>
+            <Text style={styles.price}>R$ {props.price?.toFixed(2).replace('.',',')}</Text>
+          </Animated.View>
 
+          {props.selected && (
+            <View style={styles.options}>
+              <TouchableOpacity activeOpacity={0.8} onPress={props.handleTrash}>
+                <Ionicons name="trash-outline" color={'white'} size={50} style={{color: 'red'}}/>
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <Ionicons name="create-outline" color={'white'} size={50}/>
+              </TouchableOpacity>
+            </View>
+          )}
+        </Pressable>
     );
 }
 
 
 const styles = StyleSheet.create({
- card: {
+  options: {
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
+    flexDirection: 'row',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    gap: 50
+  },
+  card: {
     backgroundColor: 'rgba(39, 37, 37, 0.83)',
     width: '100%',
     height: 100,

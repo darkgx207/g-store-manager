@@ -1,15 +1,48 @@
-import { Text, View } from "react-native";
+import { useState } from "react";
+import { Text, View, StyleSheet, Button, TextInput, Modal } from "react-native";
 
 export default function Index() {
+
+  
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Teste</Text>
+    <View style={styles.center}>
+      <Text>
+        Teste
+      </Text>
     </View>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const styles = StyleSheet.create({
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center"
+  }
+})

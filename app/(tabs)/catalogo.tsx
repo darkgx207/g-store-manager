@@ -1,4 +1,4 @@
-import { Button, ScrollView, StyleSheet, View, Modal, FlatList } from "react-native";
+import { Button, ScrollView, StyleSheet, View, Modal, FlatList, TouchableHighlight, TouchableOpacity, Text, Alert } from "react-native";
 import { useEffect, useState } from "react";
 import * as ip from 'expo-image-picker';
 import { ItemCard } from "@/components/ItemCard";
@@ -10,13 +10,32 @@ export default function Catalogo() {
   const db = useDatabase();
   const [showModal, setShowModal] = useState(false);
   const [foodList, setFoodList] = useState<Item[]>([]);
+  const [selected, setSelected] = useState(0);
+
+  const fetchItems = async () => {
+    setFoodList(await db.fetchItems())
+  }
 
   useEffect(() => {
-    (async () => {
-      setFoodList(await db.fetchItems())
-    })();
-
+    fetchItems();
   }, [showModal])
+
+  const toggleItemSelected = (key: number) => {
+    setSelected( (key === selected) ? 0 : key);
+  }
+
+  const deleteItem = (id: number) => {
+    Alert.alert("ATENÇÃO","Tem certeza que deseja remover este item?", [
+      {
+        text: "SIM", 
+        onPress: async () => {
+          (await db.deleteItem(id)) && Alert.alert("","Item excluído com sucesso");
+          fetchItems();
+        }
+      },
+      { text: "NÃO" }
+    ]);
+  }
 
   return (
     <View style={{flex: 1}}>
@@ -28,13 +47,21 @@ export default function Catalogo() {
         style={styles.listContainer}
         data={foodList}
         contentContainerStyle={{ gap: 5, margin: 0, padding: 5 }}
-        renderItem={({item}) => <ItemCard imgUri={item.imgUri} title={item.title} description={item.description} price={item.price} />}
+        keyExtractor={ (item) => String(item.id) }
+        renderItem={({item}) => 
+          <ItemCard 
+            imgUri={item.imgUri} 
+            title={item.title} 
+            description={item.description} 
+            price={item.price} 
+            selected={item.id === selected}
+            handlePress={() => { toggleItemSelected(item.id!) }}
+            handleTrash={() => deleteItem(item.id!)}
+          />
+        }
       />
 
-      <Modal
-        visible={showModal}
-        animationType="slide"
-      >
+      <Modal visible={showModal} animationType="slide">
         <NewItemModal closeModal={() => setShowModal(false)}/>
       </Modal>
     </View>

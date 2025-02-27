@@ -4,7 +4,7 @@ import { StyleSheet, View } from "react-native";
 
 export default function RootLayout() {
   return (
-    <Tabs 
+    <Tabs
       screenOptions={{
         tabBarActiveTintColor: 'white', 
         headerShown: false, 
@@ -16,7 +16,8 @@ export default function RootLayout() {
           backgroundColor: "white",
         },
         animation: "shift",
-        tabBarVisibilityAnimationConfig: {show: {animation: "spring"}}
+        tabBarVisibilityAnimationConfig: {show: {animation: "spring"}},
+        lazy: true,
       }}
     >
       <Tabs.Screen 

@@ -76,5 +76,14 @@ export function useDatabase() {
         catch (error) { Alert.alert("ERRO","Não foi possivel obter os registros dos items") }
     }
 
-    return { createItem, fetchItems, deleteAllItems }
+    async function deleteItem(id: number) {
+        const stmt = await db.prepareAsync(`DELETE FROM items where id = ${id}`);
+        try {
+            return (await stmt.executeAsync()).changes > 0;
+        }
+        catch (error) { Alert.alert("ERRO","Não foi possivel apagar o item") }
+        finally { stmt.finalizeAsync() }
+    }
+
+    return { createItem, fetchItems, deleteAllItems, deleteItem }
 }
