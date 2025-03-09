@@ -59,13 +59,15 @@ export function useDatabase() {
         finally { await stmt.finalizeAsync() }
     }
 
-    async function fetchItems() {
-        try { 
-            return await db.getAllAsync<Item>('SELECT * FROM items') || [];
+    async function fetchItems(id?: number) {
+        try {
+            const sql = id ? `SELECT * FROM items where id=${id}` : 'SELECT * FROM items' ;
+            return await db.getAllAsync<Item>(sql) || [];
         } 
         
         catch (error) { 
             Alert.alert("ERRO","Não foi possivel obter os registros dos items") 
+            console.error(error)
             return []
         }
     }
@@ -85,5 +87,16 @@ export function useDatabase() {
         finally { stmt.finalizeAsync() }
     }
 
-    return { createItem, fetchItems, deleteAllItems, deleteItem }
+    async function updateItem(item: Item) {
+        const stmt = await db.prepareAsync('UPDATE items SET title = $title, price = $price, description = $description, imgUri = $imgUri WHERE id = $id');
+        try {
+            if (!item.id) throw new Error("[]");
+            const res = await stmt.executeAsync({ $title: item.title, $price: item.price, $description: item.description, $imgUri: item.imgUri, $id: item.id });
+            return res.changes > 0;
+        }
+        catch (error) { Alert.alert("ERRO", "Não foi possível alterar esse item") }
+        finally { await stmt.finalizeAsync(); }
+    }
+
+    return { createItem, fetchItems, deleteAllItems, deleteItem, updateItem }
 }

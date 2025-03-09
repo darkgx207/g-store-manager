@@ -33,7 +33,7 @@ export function ItemCard(props: ItemCardProps) {
               <TouchableOpacity activeOpacity={0.8} onPress={props.handleTrash}>
                 <Ionicons name="trash-outline" color={'white'} size={50} style={{color: 'red'}}/>
               </TouchableOpacity>
-              <TouchableOpacity>
+              <TouchableOpacity activeOpacity={0.8} onPress={props.handleEdit}>
                 <Ionicons name="create-outline" color={'white'} size={50}/>
               </TouchableOpacity>
             </View>

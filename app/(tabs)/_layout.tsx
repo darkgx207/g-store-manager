@@ -32,8 +32,9 @@ export default function RootLayout() {
       }}/>
 
       <Tabs.Screen 
-        name="index" 
+        name="index"
         options={{
+          tabBarLabel: "Inicio",
           tabBarIcon: ({ focused, color }) => (
             <View style={focused ? styles.focused : {} }>
               <FontAwesome size={24} name="home" color={color}/>
@@ -44,6 +45,7 @@ export default function RootLayout() {
       <Tabs.Screen 
         name="page2" 
         options={{
+          tabBarLabel: 'Perfil',
           tabBarIcon: ({ focused, color }) => (
             <View style={focused ? styles.focused : {} }>
               <FontAwesome size={24} name="address-card" color={color}/>
