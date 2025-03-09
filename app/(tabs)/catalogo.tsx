@@ -1,6 +1,5 @@
-import { Button, ScrollView, StyleSheet, View, Modal, FlatList, TouchableHighlight, TouchableOpacity, Text, Alert } from "react-native";
+import { Button, StyleSheet, View, Modal, FlatList, Alert } from "react-native";
 import { useEffect, useState } from "react";
-import * as ip from 'expo-image-picker';
 import { ItemCard } from "@/components/ItemCard";
 import NewItemModal from "../newItemModal";
 import { useDatabase } from "@/database/database";
@@ -11,16 +10,28 @@ export default function Catalogo() {
   const [showModal, setShowModal] = useState(false);
   const [foodList, setFoodList] = useState<Item[]>([]);
   const [selected, setSelected] = useState(0);
+  const [ selectedItem, setSelectedItem] = useState<Item>();
+  
 
   const fetchItems = async () => {
-    setFoodList(await db.fetchItems())
+    setFoodList(await db.fetchItems());
   }
 
   useEffect(() => {
     fetchItems();
-  }, [showModal])
+  }, [showModal]);
 
-  const toggleItemSelected = (key: number) => {
+
+  const editSelectedItem = async () => {
+    const item = (await db.fetchItems(selected))?.[0];
+    if (!item) return;
+    setSelectedItem(item);
+    setShowModal(true);
+    setSelected(0);
+  };
+
+
+  const toggleItemSelected = async (key: number) => {
     setSelected( (key === selected) ? 0 : key);
   }
 
@@ -40,7 +51,7 @@ export default function Catalogo() {
   return (
     <View style={{flex: 1}}>
       <View style={styles.addContainer}>
-        <Button title="Cadastrar novo item" color='green' onPress={() => setShowModal(true)}/>
+        <Button title="Cadastrar novo item" color='green' onPress={() => {setShowModal(true)}}/>
       </View>
 
       <FlatList 
@@ -57,15 +68,18 @@ export default function Catalogo() {
             selected={item.id === selected}
             handlePress={() => { toggleItemSelected(item.id!) }}
             handleTrash={() => deleteItem(item.id!)}
+            handleEdit={() => editSelectedItem()}
           />
         }
       />
 
       <Modal visible={showModal} animationType="slide">
-        <NewItemModal closeModal={() => setShowModal(false)}/>
+        <NewItemModal 
+          closeModal={() => setShowModal(false)} 
+          item={selectedItem}
+        />
       </Modal>
     </View>
-
   );
 }
 
