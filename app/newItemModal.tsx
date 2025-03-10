@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { StyleSheet, Image, TouchableOpacity, TextInput, ImageURISource, Dimensions, Button, KeyboardAvoidingView, ScrollView, View, Alert, BackHandler,  } from "react-native";
 import * as imagePicker from 'expo-image-picker';
 import { useDatabase } from "@/database/database";
@@ -9,13 +9,22 @@ const defaultImage = require('../assets/images/img-not-found.png');
 const WIDTH = Dimensions.get("screen").width;
 const HEIGHT = Dimensions.get("screen").height;
 
-export default function NewItemModal({closeModal}: {closeModal: () => void}) {
+export default function NewItemModal({closeModal, item}: {closeModal: () => void, item?: Item}) {
     const sql = useDatabase();
 
     const [img, setImg] = useState<ImageURISource>();
     const [title, setTitle] = useState('');
     const [price, setPrice] = useState('');
     const [desc, setDesc] = useState('');
+
+    if (item) {
+        useMemo(() => {
+            setImg({uri: item.imgUri});
+            setTitle(item.title);
+            setPrice(item.price.toString());
+            setDesc(item.description);
+        }, [item]);
+    }
 
     const takePhoto = () => {
         Alert.alert("UPLOAD","Qual opção deseja utilizar", [
@@ -41,14 +50,17 @@ export default function NewItemModal({closeModal}: {closeModal: () => void}) {
     };
 
     const saveNewItem = async () => {
-        const item: Item = {
+        const _item: Item = {
             description: desc,
             title: title,
             price: Number(price),
-            imgUri: img?.uri || ""
+            imgUri: img?.uri || "",
+            id: item?.id || 0
         };
 
-        await sql.createItem(item);
+        if (_item.id) { await sql.updateItem(_item) && Alert.alert('', "Item atualizado com sucesso") } 
+        else { await sql.createItem(_item) }
+
         closeModal();
     }
 

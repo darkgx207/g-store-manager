@@ -7,7 +7,7 @@ export default function Index() {
   return (
     <View style={styles.center}>
       <Text>
-        Teste
+        Inicio
       </Text>
     </View>
   );
