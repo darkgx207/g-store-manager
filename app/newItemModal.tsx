@@ -73,7 +73,7 @@ export default function NewItemModal({closeModal, item}: {closeModal: () => void
                         style={{ width: 250, height: 250 }}
                     />
                 </TouchableOpacity>
-                <KeyboardAvoidingView style={{ gap: 10 }} behavior="padding">
+                <KeyboardAvoidingView style={{ gap: 10, maxHeight: HEIGHT }} behavior="padding">
                     <TextInput 
                         placeholder="Nome" 
                         textAlign="left" 

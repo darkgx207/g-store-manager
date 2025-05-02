@@ -48,6 +48,11 @@ export default function Catalogo() {
     ]);
   }
 
+  const closeItemModal = () => {
+    setShowModal(false);
+    setSelectedItem(undefined);
+  }
+
   return (
     <View style={{flex: 1}}>
       <View style={styles.addContainer}>
@@ -75,7 +80,7 @@ export default function Catalogo() {
 
       <Modal visible={showModal} animationType="slide">
         <NewItemModal 
-          closeModal={() => setShowModal(false)} 
+          closeModal={() => closeItemModal()} 
           item={selectedItem}
         />
       </Modal>
