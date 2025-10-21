@@ -10,7 +10,7 @@ export default function mainContainer() {
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <StatusBar backgroundColor="black" style={theme === 'dark' ? 'dark' : 'light'} translucent={false} />
-            <SQLiteProvider databaseName="database.db" onInit={initDatabase}>
+            <SQLiteProvider databaseName="database.db" onInit={initDatabaseTest}>
                 <Stack screenOptions={{ animation: "slide_from_bottom" }}>
                     <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                 </Stack>

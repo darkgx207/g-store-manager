@@ -1,5 +1,5 @@
 import { Cart } from "@/components/cart";
-import { Text, View, StyleSheet, Button, TextInput, Modal, Dimensions, ScrollView } from "react-native";
+import { Text, View, StyleSheet, Button, Dimensions, ScrollView } from "react-native";
 
 const WIDTH = Dimensions.get("screen").width;
 const HEIGHT = Dimensions.get("screen").height;

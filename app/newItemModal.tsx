@@ -1,32 +1,33 @@
 import { useMemo, useState } from "react";
-import { StyleSheet, Image, TouchableOpacity, TextInput, ImageURISource, Dimensions, Button, KeyboardAvoidingView, ScrollView, View, Alert, BackHandler,  } from "react-native";
+import { StyleSheet, Image, TouchableOpacity, TextInput, ImageURISource, Dimensions, Button, KeyboardAvoidingView, ScrollView, View, Alert, SafeAreaView,  } from "react-native";
 import * as imagePicker from 'expo-image-picker';
 import { useDatabase } from "@/database/database";
 import { Item } from "@/database/models/Item";
 
+interface INewItemModelProps {
+  closeModal: () => void,
+  item?: Item
+}
 
 const defaultImage = require('../assets/images/img-not-found.png');
 const WIDTH = Dimensions.get("screen").width;
 const HEIGHT = Dimensions.get("screen").height;
 
-export default function NewItemModal({closeModal, item}: {closeModal: () => void, item?: Item}) {
+export default function NewItemModal({ closeModal, item }: INewItemModelProps) {
     const sql = useDatabase();
 
-    const [img, setImg] = useState<ImageURISource>();
-    const [title, setTitle] = useState('');
-    const [price, setPrice] = useState('');
-    const [desc, setDesc] = useState('');
-
-    if (item) {
-        useMemo(() => {
-            setImg({uri: item.imgUri});
-            setTitle(item.title);
-            setPrice(item.price.toString());
-            setDesc(item.description);
-        }, [item]);
-    }
-
-    const takePhoto = () => {
+    // Solução para evitar infinity hook callback
+    const img_ = item?.imgUri;
+    const title_ = item?.title || "";
+    const price_ = item?.price || "";
+    const desc_ = item?.description || "";
+    
+    const [img, setImg] = useState<ImageURISource>(img_ && { uri: img_ } || defaultImage);
+    const [title, setTitle] = useState(title_);
+    const [price, setPrice] = useState(price_.toString());
+    const [desc, setDesc] = useState(desc_);
+    
+    const takePhoto = () =>{
         Alert.alert("UPLOAD","Qual opção deseja utilizar", [
             {text: "cancelar"},
             {
@@ -50,10 +51,11 @@ export default function NewItemModal({closeModal, item}: {closeModal: () => void
     };
 
     const saveNewItem = async () => {
+        const _price = price.replace(',', '.');
         const _item: Item = {
             description: desc,
             title: title,
-            price: Number(price),
+            price: Number(_price),
             imgUri: img?.uri || "",
             id: item?.id || 0
         };
@@ -65,48 +67,54 @@ export default function NewItemModal({closeModal, item}: {closeModal: () => void
     }
 
     return (
+      <SafeAreaView>
         <ScrollView>
-            <View style={[style.container, { alignItems: "center" }]}>
-                <TouchableOpacity style={[style.imageContainer, { marginVertical: 30 }]} onPress={takePhoto}>
-                    <Image 
-                        source={ img || defaultImage }
-                        style={{ width: 250, height: 250 }}
-                    />
-                </TouchableOpacity>
-                <KeyboardAvoidingView style={{ gap: 10, maxHeight: HEIGHT }} behavior="padding">
-                    <TextInput 
-                        placeholder="Nome" 
-                        textAlign="left" 
-                        style= {style.input}
-                        maxLength={50}
-                        value={title}
-                        onChangeText={setTitle}
-                    />
+          <View style={[style.container, { alignItems: "center" }]}>
+            <TouchableOpacity style={[style.imageContainer, { marginVertical: 30 }]} onPress={takePhoto}>
+              <Image 
+                source={ img || defaultImage }
+                style={{ width: 250, height: 250 }}
+              />
+            </TouchableOpacity>
+            <KeyboardAvoidingView style={{ gap: 10, maxHeight: HEIGHT }} behavior="padding">
+              <TextInput 
+                placeholder="Nome" 
+                textAlign="left" 
+                style= {style.input}
+                maxLength={50}
+                value={title}
+                onChangeText={setTitle}
+                placeholderTextColor={"#0007"}
+              />
 
-                    <TextInput 
-                        placeholder="Preço" 
-                        textAlign="left" 
-                        style= {style.input}
-                        maxLength={50}
-                        keyboardType="decimal-pad"
-                        onChangeText={setPrice}
-                        value={price}
-                    />
+              <TextInput 
+                placeholder="Preço" 
+                textAlign="left" 
+                style= {style.input}
+                maxLength={50}
+                keyboardType="decimal-pad"
+                onChangeText={setPrice}
+                value={price}
+                placeholderTextColor={"#0007"}
+              />
 
-                    <TextInput 
-                        placeholder="Descrição" 
-                        textAlign="left" 
-                        style= {[style.input, { marginTop: 5, minHeight: 100, maxHeight: 200 }]} multiline={true} 
-                        maxLength={250}
-                        value={desc}
-                        onChangeText={setDesc}
-                    />
+              <TextInput 
+                placeholder="Descrição" 
+                textAlign="left" 
+                style= {[style.input, { marginTop: 5, minHeight: 100, maxHeight: 200 }]} multiline={true} 
+                maxLength={250}
+                value={desc}
+                onChangeText={setDesc}
+                placeholderTextColor={"#0007"}
+              />
 
-                    <Button title="Salvar" color={"green"} onPress={saveNewItem} />
-                    <Button title="Cancelar" color={"red"}  onPress={() => closeModal() }/>
-                </KeyboardAvoidingView>
-            </View>
+              <Button title="Salvar" color={"green"} onPress={saveNewItem} />
+              <Button title="Cancelar" color={"red"}  onPress={() => closeModal() }/>
+            </KeyboardAvoidingView>
+          </View>
         </ScrollView>
+      </SafeAreaView>
+      
     )
 }
 
