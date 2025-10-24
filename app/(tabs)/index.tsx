@@ -1,4 +1,4 @@
-import { Cart } from "@/components/cart";
+import { Pedido } from "@/components/pedido";
 import { Text, View, StyleSheet, Button, Dimensions, ScrollView } from "react-native";
 
 const WIDTH = Dimensions.get("screen").width;
@@ -13,7 +13,9 @@ export default function Index() {
       <View style={{paddingTop: 20}}>
         <Text style={{fontSize: 18, fontWeight: 600, marginLeft: 20 }}>Pedidos em aberto</Text>
         <ScrollView style={styles.onGoingItems}>
-          <Cart></Cart>
+          <Pedido preco="22,50"/>
+          <Pedido preco="122,00"/>
+          <Pedido preco="1230,33"/>
         </ScrollView>
       </View>
 
@@ -57,8 +59,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(157, 206, 117, 0.85)',
   },
   onGoingItems: {
-    backgroundColor: '#000',
-    opacity: 0.5,
+    backgroundColor: '#2c967c',
+    opacity: .9,
     height: HEIGHT - 300,
     marginHorizontal: 5,
     borderRadius: 5,
