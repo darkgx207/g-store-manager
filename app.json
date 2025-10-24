@@ -10,7 +10,10 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.gstoremanager"
+      "bundleIdentifier": "com.anonymous.gstoremanager",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera to take photos for your profile and other content."
+      }
     },
     "android": {
       "adaptiveIcon": {

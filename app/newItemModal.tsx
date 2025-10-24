@@ -3,6 +3,7 @@ import { StyleSheet, Image, TouchableOpacity, TextInput, ImageURISource, Dimensi
 import * as imagePicker from 'expo-image-picker';
 import { useDatabase } from "@/database/database";
 import { Item } from "@/database/models/Item";
+import { getCameraPermissionsAsync } from "expo-image-picker";
 
 interface INewItemModelProps {
   closeModal: () => void,
@@ -27,15 +28,20 @@ export default function NewItemModal({ closeModal, item }: INewItemModelProps) {
     const [price, setPrice] = useState(price_.toString());
     const [desc, setDesc] = useState(desc_);
     
-    const takePhoto = () =>{
+    const takePhoto = async () => {
+        
+        
         Alert.alert("UPLOAD","Qual opção deseja utilizar", [
             {text: "cancelar"},
             {
                 text: "camera",
                 onPress: async () => {
-                    const photo = await imagePicker.launchCameraAsync({quality: 1, mediaTypes: 'images'});
-                    if (photo.canceled) return;
-                    setImg({ uri: photo.assets?.[0].uri })
+                  const permission = await getCameraPermissionsAsync();
+                  if (!permission.granted) return;
+                  
+                  const photo = await imagePicker.launchCameraAsync({quality: 1, mediaTypes: 'images'});
+                  if (photo.canceled) return;
+                  setImg({ uri: photo.assets?.[0].uri })
                 }
             },
             {
