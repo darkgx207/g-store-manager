@@ -6,7 +6,6 @@ const HEIGHT = Dimensions.get("screen").height;
 
 export default function Index() {
 
-
   return (
     <View style={styles.center}>
       {/* Pedidos em aberto */}
@@ -20,9 +19,9 @@ export default function Index() {
       </View>
 
       {/* Criar novo pedido */}
-    <View style={{ margin: 5, marginTop: 20 }}>
+      <View style={{ margin: 5, marginTop: 20 }}>
         <Button title="Novo pedido" color='green' />
-    </View>
+      </View>
     </View>
   );
 }

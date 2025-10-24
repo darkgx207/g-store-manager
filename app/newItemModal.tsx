@@ -1,9 +1,10 @@
-import { useMemo, useState } from "react";
-import { StyleSheet, Image, TouchableOpacity, TextInput, ImageURISource, Dimensions, Button, KeyboardAvoidingView, ScrollView, View, Alert, SafeAreaView,  } from "react-native";
+import { useState } from "react";
+import { StyleSheet, Image, TouchableOpacity, TextInput, ImageURISource, Dimensions, Button, KeyboardAvoidingView, ScrollView, View, Alert,  } from "react-native";
 import * as imagePicker from 'expo-image-picker';
 import { useDatabase } from "@/database/database";
 import { Item } from "@/database/models/Item";
 import { getCameraPermissionsAsync } from "expo-image-picker";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface INewItemModelProps {
   closeModal: () => void,
