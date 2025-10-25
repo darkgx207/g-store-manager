@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { StyleSheet, Image, TouchableOpacity, TextInput, ImageURISource, Dimensions, Button, KeyboardAvoidingView, ScrollView, View, Alert,  } from "react-native";
+import { StyleSheet, Image, TouchableOpacity, TextInput, ImageURISource, Dimensions, Button, KeyboardAvoidingView, ScrollView, View, Alert } from "react-native";
 import * as imagePicker from 'expo-image-picker';
 import { useDatabase } from "@/database/database";
 import { Item } from "@/database/models/Item";
 import { getCameraPermissionsAsync } from "expo-image-picker";
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { RadioButton, RadioSelect } from "@/components/gRadio";
+import { UnidadeVendas } from "@/constants/constantValues";
 
 interface INewItemModelProps {
   closeModal: () => void,
@@ -23,11 +25,13 @@ export default function NewItemModal({ closeModal, item }: INewItemModelProps) {
     const title_ = item?.title || "";
     const price_ = item?.price || "";
     const desc_ = item?.description || "";
+    const sellingUnit_ = item?.sellingUnit || "Unidade";
     
     const [img, setImg] = useState<ImageURISource>(img_ && { uri: img_ } || defaultImage);
     const [title, setTitle] = useState(title_);
     const [price, setPrice] = useState(price_.toString());
     const [desc, setDesc] = useState(desc_);
+    const [sellingUnit, setSellingUnit] = useState(sellingUnit_);
     
     const takePhoto = () => {
       const uploadFromCamera = async () => {
@@ -67,7 +71,8 @@ export default function NewItemModal({ closeModal, item }: INewItemModelProps) {
             title: title,
             price: Number(_price),
             imgUri: img?.uri || "",
-            id: item?.id || 0
+            id: item?.id || 0,
+            sellingUnit: sellingUnit 
         };
 
         if (_item.id) { await sql.updateItem(_item) && Alert.alert('', "Item atualizado com sucesso") } 
@@ -116,6 +121,15 @@ export default function NewItemModal({ closeModal, item }: INewItemModelProps) {
                 value={desc}
                 onChangeText={setDesc}
                 placeholderTextColor={"#0007"}
+              />
+              
+              <RadioSelect 
+                options={[UnidadeVendas.UNIDADE, UnidadeVendas.KG]} 
+                label="Unidade de venda"
+                defaultValue={sellingUnit}
+                onChange={(value) => {
+                  setSellingUnit(value as typeof sellingUnit);
+                }}
               />
 
               <Button title="Salvar" color={"green"} onPress={saveNewItem} />

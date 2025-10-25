@@ -4,7 +4,6 @@ import { Alert } from "react-native";
 import { getMigrateSql } from "./fakeDataMigration";
 
 
-
 export async function initDatabase(db: SQLiteDatabase) {
     await db.execAsync(
         `CREATE TABLE IF NOT EXISTS items (
@@ -12,11 +11,11 @@ export async function initDatabase(db: SQLiteDatabase) {
             title STRING NOT NULL,
             price FLOAT NOT NULL,
             description TEXT,
-            imgUri TEXT
+            imgUri TEXT,
+            sellingUnit TEXT NOT NULL DEFAULT 'Unidade'
         );`
     );
 }
-
 
 export async function initDatabaseTest(db: SQLiteDatabase) {
     try {
@@ -27,7 +26,8 @@ export async function initDatabaseTest(db: SQLiteDatabase) {
                 title STRING NOT NULL,
                 price FLOAT NOT NULL,
                 description TEXT,
-                imgUri TEXT
+                imgUri TEXT,
+                sellingUnit TEXT NOT NULL DEFAULT 'Unidade'
             );` + 
             getMigrateSql() + ";"
         );
@@ -35,22 +35,16 @@ export async function initDatabaseTest(db: SQLiteDatabase) {
     } catch (error) { console.error("Impossivel gerar databaseInitTest", error) }
 }
 
-
-// function convertMissingValuesToNull(object: Record<string, any>) {
-//     for (const key in object) {
-//         if (object[key] === "") object[key] = "NULL";
-//     }
-// }
-
-
 export function useDatabase() {
     const db = useSQLiteContext();
 
     async function createItem(item: Item) {
-        const stmt = await db.prepareAsync('INSERT INTO items (title, price, description, imgUri) values ($title, $price, $description, $imgUri)');
+        const stmt = await db.prepareAsync(
+          'INSERT INTO items (title, price, description, imgUri, sellingUnit) values ($title, $price, $description, $imgUri, $sellingUnit)'
+        );
         try {
             // convertMissingValuesToNull(item);
-            const result = await stmt.executeAsync({ $title: item.title, $price: item.price, $description: item.description, $imgUri: item.imgUri});
+            const result = await stmt.executeAsync({ $title: item.title, $price: item.price, $description: item.description, $imgUri: item.imgUri, $sellingUnit: item.sellingUnit });
             Alert.alert("","Item registrado com sucesso");
             return result.lastInsertRowId;
         }
@@ -88,10 +82,10 @@ export function useDatabase() {
     }
 
     async function updateItem(item: Item) {
-        const stmt = await db.prepareAsync('UPDATE items SET title = $title, price = $price, description = $description, imgUri = $imgUri WHERE id = $id');
+        const stmt = await db.prepareAsync('UPDATE items SET title = $title, price = $price, description = $description, imgUri = $imgUri, sellingUnit = $sellingUnit WHERE id = $id');
         try {
             if (!item.id) throw new Error("[]");
-            const res = await stmt.executeAsync({ $title: item.title, $price: item.price, $description: item.description, $imgUri: item.imgUri, $id: item.id });
+            const res = await stmt.executeAsync({ $title: item.title, $price: item.price, $description: item.description, $imgUri: item.imgUri, $sellingUnit: item.sellingUnit, $id: item.id });
             return res.changes > 0;
         }
         catch (error) { Alert.alert("ERRO", "Não foi possível alterar esse item") }

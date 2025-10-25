@@ -25,6 +25,7 @@ export default function Catalogo() {
   const editSelectedItem = async () => {
     const item = (await db.fetchItems(selected))?.[0];
     if (!item) return;
+
     setSelectedItem(item);
     setShowModal(true);
     setSelected(0);

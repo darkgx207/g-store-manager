@@ -9,7 +9,7 @@ export default function Page2() {
         alignItems: "center",
       }}
     >
-      <Text>Teste 2</Text>
+      <Text>Relatórios</Text>
     </View>
   );
 }
