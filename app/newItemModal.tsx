@@ -29,32 +29,35 @@ export default function NewItemModal({ closeModal, item }: INewItemModelProps) {
     const [price, setPrice] = useState(price_.toString());
     const [desc, setDesc] = useState(desc_);
     
-    const takePhoto = async () => {
+    const takePhoto = () => {
+      const uploadFromCamera = async () => {
+        const permission = await getCameraPermissionsAsync();
+        if (!permission.granted) {
+          console.warn("[error] Permissão de camera não concedida");
+          Alert.alert("", "Sem permissão de acesso a camera");
+          return;
+        }
         
+        const photo = await imagePicker.launchCameraAsync({quality: 1, mediaTypes: 'images'});
+        if (photo.canceled) return;
+        setImg({ uri: photo.assets?.[0].uri }) 
+      };
+      
+      const uploadFromGallery = async () => {
+        const photo = await imagePicker.launchImageLibraryAsync({quality: 1, mediaTypes: 'images'});
+        if (photo.canceled) return;
         
-        Alert.alert("UPLOAD","Qual opção deseja utilizar", [
-            {text: "cancelar"},
-            {
-                text: "camera",
-                onPress: async () => {
-                  const permission = await getCameraPermissionsAsync();
-                  if (!permission.granted) return;
-                  
-                  const photo = await imagePicker.launchCameraAsync({quality: 1, mediaTypes: 'images'});
-                  if (photo.canceled) return;
-                  setImg({ uri: photo.assets?.[0].uri })
-                }
-            },
-            {
-                text: "galeria",
-                onPress: async () => {
-                    const photo = await imagePicker.launchImageLibraryAsync({quality: 1, mediaTypes: 'images'});
-                    if (photo.canceled) return;
-                    setImg({ uri: photo.assets?.[0].uri })
-                }
-            }
-        ],{cancelable: true});
-        
+        const uri = photo.assets?.[0].uri;
+        setImg({ uri });
+      };
+      
+      const buttons = [
+        { text: "cancelar" },
+        { text: "camera", onPress: uploadFromCamera },
+        { text: "galeria", onPress: uploadFromGallery }
+      ];
+      
+      Alert.alert("UPLOAD","Qual opção deseja utilizar", buttons, {cancelable: true});
     };
 
     const saveNewItem = async () => {
