@@ -1,3 +1,4 @@
+import { OrderResume } from "@/database/models/OrderResume";
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 
 interface ICustomText {
@@ -8,6 +9,11 @@ interface ICustomText {
     alignX?: "auto" | "center" | "left" | "right" | "justify",
     weight?: any | "100" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900"
   }
+}
+
+interface IPedidoProps {
+  order: OrderResume
+  editOrder?: (id?: number) => void 
 }
 
 function Textc({ content, opts }: ICustomText) {
@@ -26,27 +32,34 @@ function Textc({ content, opts }: ICustomText) {
 }
 
 // Buscar todos os pedidos em aberto do banco de dados.
-export function Pedido({ preco }: {preco?: string} ) {
-  if (!preco) preco = "00,00";
+export function Pedido(props: IPedidoProps) {
   
   const confirmPayment = () => {
-    Alert.alert(
-      "", "Tem certeza que deseja confirmar o pagamento?",
-      [{ text: "Sim", onPress: () => { }}, { text: "Não", onPress: () => { }}],
-      {cancelable: true}
-    )
+    const buttons = [{ text: "Sim", onPress: () => { } }, { text: "Não", onPress: () => { } }];
+    Alert.alert("", "Tem certeza que deseja confirmar o pagamento?", buttons, { cancelable: true });
   }
   
   const showOrder = () => {
+    props.editOrder?.(props.order.id);
+  }
+  
+  const getItensResume = (): string => {
+    let resume = "";
+    const size = props.order.items?.length;
     
+    props.order.items?.forEach((it, i) => {
+      resume += `${it.title}(${it.quantity})${(i+1 == size) ? "" : ", "}`;
+    });
+    
+    return resume;
   }
   
   return (
     <View style={styles.container}>
       <View style={styles.innerContainer}>
         <View style={{ flex: 1 }}>
-          <Textc content="Identificador: 11, Cliente: Alberto" opts={{weight: "800"}}/>
-          <Textc content="Coxinha(1), Espetinho(2), Pizza Margerita(1), Feijão tropeiro, Macarronada"/>
+          <Textc content={`Identificador: ${props.order.id}`} opts={{weight: "800"}}/>
+          <Textc content={getItensResume()} />
         </View>
         
         <View style={styles.centralBtnLayout}>
@@ -57,7 +70,7 @@ export function Pedido({ preco }: {preco?: string} ) {
             <Textc content="Visualizar" opts={{fontSize: 14, color: "#fff"}} />
           </TouchableOpacity>
           <View style={{flex: 1}}>
-            <Textc content={"R$ "+ preco} opts={{alignX: "right" , weight: "700"}}/>
+            <Textc content={"R$ "+ props.order.total} opts={{alignX: "right" , weight: "700"}}/>
           </View>
         </View>
       </View>
@@ -65,10 +78,6 @@ export function Pedido({ preco }: {preco?: string} ) {
     </View>
   );
 }
-/* Funçoes necessárias
-  - confirmar pagamento {Salvar no db}
-  - Editar Pedido {apagar, inserir novas items, alterar nome?}
-*/
 
 const styles = StyleSheet.create({
   text: {

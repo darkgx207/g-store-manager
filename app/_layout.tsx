@@ -1,4 +1,4 @@
-import { initDatabaseTest } from "@/database/database";
+import { initDatabase, initDatabaseTest } from "@/database/database";
 import { Stack } from "expo-router";
 import { SQLiteProvider } from "expo-sqlite";
 import { StatusBar } from "expo-status-bar";
@@ -12,11 +12,11 @@ export default function mainContainer() {
     return (
       <SafeAreaView style={{ flex: 1, paddingBottom: 0, paddingTop: 0, backgroundColor: "#0007" }} edges={{bottom: "off", top: "additive"}}>
         <StatusBar backgroundColor="black" style={theme === 'dark' ? 'dark' : 'light'} translucent={false} />
-            <SQLiteProvider databaseName="database.db" onInit={initDatabaseTest}>
-              <Stack screenOptions={{ animation: "slide_from_bottom" }}>
+        <SQLiteProvider databaseName="database.db" onInit={initDatabaseTest}>
+          <Stack screenOptions={{ animation: "slide_from_bottom" }}>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                </Stack>
-            </SQLiteProvider>
-        </SafeAreaView>
+          </Stack>
+        </SQLiteProvider>
+      </SafeAreaView>
     )
 }

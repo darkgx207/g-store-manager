@@ -4,8 +4,7 @@ import * as imagePicker from 'expo-image-picker';
 import { useDatabase } from "@/database/database";
 import { Item } from "@/database/models/Item";
 import { getCameraPermissionsAsync } from "expo-image-picker";
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { RadioButton, RadioSelect } from "@/components/gRadio";
+import { RadioSelect } from "@/components/gRadio";
 import { UnidadeVendas } from "@/constants/constantValues";
 
 interface INewItemModelProps {
@@ -82,10 +81,9 @@ export default function NewItemModal({ closeModal, item }: INewItemModelProps) {
     }
 
     return (
-      <SafeAreaView>
         <ScrollView>
           <View style={[style.container, { alignItems: "center" }]}>
-            <TouchableOpacity style={[style.imageContainer, { marginVertical: 30 }]} onPress={takePhoto}>
+            <TouchableOpacity style={[style.imageContainer, { marginVertical: 20 }]} onPress={takePhoto}>
               <Image 
                 source={ img || defaultImage }
                 style={{ width: 250, height: 250 }}
@@ -137,15 +135,13 @@ export default function NewItemModal({ closeModal, item }: INewItemModelProps) {
             </KeyboardAvoidingView>
           </View>
         </ScrollView>
-      </SafeAreaView>
-      
     )
 }
 
 
 const style = StyleSheet.create({
     container: {
-        padding: 10,
+        padding: 2,
         flex: 1
     },
     imageContainer: {

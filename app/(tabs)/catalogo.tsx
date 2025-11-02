@@ -10,7 +10,7 @@ export default function Catalogo() {
   const [showModal, setShowModal] = useState(false);
   const [foodList, setFoodList] = useState<Item[]>([]);
   const [selected, setSelected] = useState(0);
-  const [ selectedItem, setSelectedItem] = useState<Item>();
+  const [selectedItem, setSelectedItem] = useState<Item>();
   
 
   const fetchItems = async () => {
@@ -79,7 +79,7 @@ export default function Catalogo() {
         }
       />
 
-      <Modal visible={showModal} animationType="slide">
+      <Modal visible={showModal} animationType="slide" presentationStyle="formSheet">
         <NewItemModal 
           closeModal={() => closeItemModal()} 
           item={selectedItem}

@@ -1,27 +1,48 @@
 import { Pedido } from "@/components/pedido";
-import { Text, View, StyleSheet, Button, Dimensions, ScrollView } from "react-native";
+import { Text, View, StyleSheet, Button, Dimensions, ScrollView, Modal } from "react-native";
+import NewOrderModal from "../newOrderModal";
+import { useEffect, useState } from "react";
+import { useDatabase } from "@/database/database";
+import { OrderResume } from "@/database/models/OrderResume";
 
 const WIDTH = Dimensions.get("screen").width;
 const HEIGHT = Dimensions.get("screen").height;
 
 export default function Index() {
-
+  const db = useDatabase();
+  const [showOrderModal, setShowOrderModal] = useState(false);
+  const [orders, setOrders] = useState<OrderResume[]>([]);
+  const [selected, setSelected] = useState<number | undefined>(undefined);
+  
+  const fetchItemOrder = async() => {
+    const res = (await db.fetchItemOrder(0, false)) || [];
+    setOrders(res)
+  };
+  
+  useEffect(() => {
+    fetchItemOrder();
+  }, []);
+  
   return (
     <View style={styles.center}>
       {/* Pedidos em aberto */}
       <View style={{paddingTop: 20}}>
         <Text style={{fontSize: 18, fontWeight: 600, marginLeft: 20 }}>Pedidos em aberto</Text>
         <ScrollView style={styles.onGoingItems}>
-          <Pedido preco="22,50"/>
-          <Pedido preco="122,00"/>
-          <Pedido preco="1230,33"/>
+          {orders.map((order, i) => (
+            <Pedido order={order} key={String(i)} editOrder={setSelected}/>
+          ))}
         </ScrollView>
       </View>
 
       {/* Criar novo pedido */}
       <View style={{ margin: 5, marginTop: 20 }}>
-        <Button title="Novo pedido" color='green' />
+        <Button title="Novo pedido" color='green' onPress={() => setShowOrderModal(!showOrderModal)}/>
       </View>
+      
+      <Modal visible={showOrderModal || selected != undefined} presentationStyle="formSheet" animationType="slide">
+        <NewOrderModal closeModal={() => { setShowOrderModal(false); setSelected(undefined); fetchItemOrder() }} orderId={selected} />
+      </Modal>
     </View>
   );
 }
