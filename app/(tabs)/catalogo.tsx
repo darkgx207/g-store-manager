@@ -10,7 +10,7 @@ export default function Catalogo() {
   const [showModal, setShowModal] = useState(false);
   const [foodList, setFoodList] = useState<Item[]>([]);
   const [selected, setSelected] = useState(0);
-  const [ selectedItem, setSelectedItem] = useState<Item>();
+  const [selectedItem, setSelectedItem] = useState<Item>();
   
 
   const fetchItems = async () => {
@@ -25,6 +25,7 @@ export default function Catalogo() {
   const editSelectedItem = async () => {
     const item = (await db.fetchItems(selected))?.[0];
     if (!item) return;
+
     setSelectedItem(item);
     setShowModal(true);
     setSelected(0);
@@ -46,6 +47,11 @@ export default function Catalogo() {
       },
       { text: "NÃO" }
     ]);
+  }
+
+  const closeItemModal = () => {
+    setShowModal(false);
+    setSelectedItem(undefined);
   }
 
   return (
@@ -73,9 +79,9 @@ export default function Catalogo() {
         }
       />
 
-      <Modal visible={showModal} animationType="slide">
+      <Modal visible={showModal} animationType="slide" presentationStyle="formSheet">
         <NewItemModal 
-          closeModal={() => setShowModal(false)} 
+          closeModal={() => closeItemModal()} 
           item={selectedItem}
         />
       </Modal>

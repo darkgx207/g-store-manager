@@ -1,6 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
-import { Animated, BackHandler, Dimensions, Image, Modal, Pressable, StyleSheet, Text, TextInput, Touchable, TouchableHighlight, TouchableOpacity, View } from "react-native";
+import { Animated, Dimensions, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface ItemCardProps {
   imgUri: string,

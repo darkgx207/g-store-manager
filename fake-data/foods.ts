@@ -1,7 +1,7 @@
 export const foodsList = [
     {
-        "imgUri": "https://assets.turismocity.com/cdn-cgi/image/format=auto/img/1714412131067_comida-tipica-brasileira.jpg",
-        "title": "Pote de Coxinhas",
+        "imgUri": "https://www.receitas-sem-fronteiras.com/media/86139_highlight-35_crop.jpg/rh/coxinha-de-frango.jpg",
+        "title": "Coxinhas",
         "price": "24,00",
         "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere, exercitationem consectetur. Impedit esse eius tempora mollitia neque. Veniam temporibus, ipsam earum velit quam sapiente consequuntur accusamus. Consequatur et laborum est!"
     },
@@ -9,12 +9,6 @@ export const foodsList = [
         "imgUri": "https://www.shutterstock.com/image-photo/brazilian-churrasquinho-kebabs-beef-chicken-600nw-2251422985.jpg",
         "title": "Espetinhos",
         "price": "12,00",
-        "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere, exercitationem consectetur. Impedit esse eius tempora mollitia neque. Veniam temporibus, ipsam earum velit quam sapiente consequuntur accusamus. Consequatur et laborum est!"
-    },
-    {
-        "imgUri": "https://images2.nogueirense.com.br/wp-content/uploads/2024/08/360_f_566610095_s4tdruy2c7o4yuuyk5bsqdpdlruw0kmc-1724966426.jpg",
-        "title": "Arroz, Carne e Batata Frita",
-        "price": "32,00",
         "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere, exercitationem consectetur. Impedit esse eius tempora mollitia neque. Veniam temporibus, ipsam earum velit quam sapiente consequuntur accusamus. Consequatur et laborum est!"
     },
     {
@@ -36,7 +30,7 @@ export const foodsList = [
         "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere, exercitationem consectetur. Impedit esse eius tempora mollitia neque. Veniam temporibus, ipsam earum velit quam sapiente consequuntur accusamus. Consequatur et laborum est!"
     },
     {
-        "imgUri": "https://www.receiteria.com.br/wp-content/uploads/sopa-indiana-000-730x480.jpeg",
+        "imgUri": "https://www.holidify.com/images/cmsuploads/compressed/IndianStreetFood_20190103000803.jpg",
         "title": "Gororoba Indiana",
         "price": "0,35",
         "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere, exercitationem consectetur. Impedit esse eius tempora mollitia neque. Veniam temporibus, ipsam earum velit quam sapiente consequuntur accusamus. Consequatur et laborum est!"
@@ -48,4 +42,3 @@ export const foodsList = [
         "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere, exercitationem consectetur. Impedit esse eius tempora mollitia neque. Veniam temporibus, ipsam earum velit quam sapiente consequuntur accusamus. Consequatur et laborum est!"
     }
 ]
-

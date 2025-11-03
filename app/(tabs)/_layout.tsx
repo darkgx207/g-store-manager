@@ -40,7 +40,8 @@ export default function RootLayout() {
               <FontAwesome size={24} name="home" color={color}/>
             </View>
           )
-      }}/>
+        }}
+      />
 
       <Tabs.Screen 
         name="page2" 
