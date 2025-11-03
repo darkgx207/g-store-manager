@@ -8,7 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function mainContainer() {
     const theme = useColorScheme();
-    
+
     return (
       <SafeAreaView style={{ flex: 1, paddingBottom: 0, paddingTop: 0, backgroundColor: "#0007" }} edges={{bottom: "off", top: "additive"}}>
         <StatusBar backgroundColor="black" style={theme === 'dark' ? 'dark' : 'light'} translucent={false} />

@@ -64,7 +64,7 @@ export async function initDatabaseTest(db: SQLiteDatabase) {
               price FLOAT NOT NULL DEFAULT 0,
               amount FLOAT NOT NULL
             );
-            ` + 
+            ` +
             getMigrateSql() + ";"
         );
     } catch (error) { console.error("Impossivel gerar databaseInitTest", error) }
@@ -83,7 +83,7 @@ export function useDatabase() {
             return result.lastInsertRowId;
         }
 
-        catch (error) { Alert.alert("ALERTA","Ocorreu um erro ao tentar salvar o item"); } 
+        catch (error) { Alert.alert("ALERTA","Ocorreu um erro ao tentar salvar o item"); }
         finally { await stmt.finalizeAsync() }
     }
 
@@ -91,10 +91,10 @@ export function useDatabase() {
         try {
             const sql = id ? `SELECT * FROM items where id=${id}` : 'SELECT * FROM items' ;
             return await db.getAllAsync<Item>(sql) || [];
-        } 
-        
-        catch (error) { 
-            Alert.alert("ERRO","Não foi possivel obter os registros dos items") 
+        }
+
+        catch (error) {
+            Alert.alert("ERRO","Não foi possivel obter os registros dos items")
             console.error(error)
             return []
         }
@@ -123,9 +123,9 @@ export function useDatabase() {
             return res.changes > 0;
         }
         catch (error) { Alert.alert("ERRO", "Não foi possível alterar esse item") }
-        finally { await stmt.finalizeAsync(); } 
+        finally { await stmt.finalizeAsync(); }
     }
-    
+
   async function insertItemOrder(orderId: number, item: ItemByNumber) {
     const sql = `INSERT INTO item_order (item_id ,order_id ,price ,amount) values ($itemId, $orderId, $price, $amount)`;
     const stmt = await db.prepareAsync(sql);
@@ -138,21 +138,21 @@ export function useDatabase() {
         $amount: item.quantity
       });
       return Promise.resolve(res.lastInsertRowId);
-      
+
     } catch (e) {
       console.error(e);
       return Promise.reject(Error("Não foi possivel inserir o item no pedido"));
-      
+
     } finally {
       console.log(sql);
       await stmt.finalizeAsync();
     }
   }
-  
+
   function updateItemOrder(orderId: number, item: ItemByNumber) {
     if (!item.quantity)
       return deleteItemOrder(orderId, item);
-    
+
     const params = {
       itemId: item.id!,
       price: Number((item.price * item.quantity!).toFixed(2)),
@@ -160,29 +160,29 @@ export function useDatabase() {
       orderId: orderId,
       itemOrderId: item.itemOrderId!
     };
-    
+
     return params.itemOrderId ? `
-    UPDATE item_order 
-      SET 
-        item_id = ${params.itemId}, 
-        price = ${params.price}, 
-        amount = ${params.amount} 
-      WHERE 
+    UPDATE item_order
+      SET
+        item_id = ${params.itemId},
+        price = ${params.price},
+        amount = ${params.amount}
+      WHERE
         id = ${params.itemOrderId} and order_id = ${orderId}
     `: `
-    INSERT INTO item_order 
-      (item_id ,order_id ,price ,amount) 
-    values 
+    INSERT INTO item_order
+      (item_id ,order_id ,price ,amount)
+    values
       (${params.itemId}, ${params.orderId}, ${params.price}, ${params.amount})
     `;
   }
-  
+
   function deleteItemOrder(orderId: number, item: ItemByNumber) {
-    return `DELETE FROM item_order WHERE id = ${item.id} and order_id = ${orderId}`;
+    return `DELETE FROM item_order WHERE id = ${item.itemOrderId} and order_id = ${orderId}`;
   }
-  
-  
-  
+
+
+
   async function createOrder(order: Order) {
     const sql = 'INSERT INTO orders (isPaid, createdAt, updatedAt, total) values ($isPaid, $createdAt, $updatedAt, $total)';
     let lastId = 0;
@@ -190,13 +190,13 @@ export function useDatabase() {
       await db.withTransactionAsync(async () => {
         const now = new Date();
         const res = await db.runAsync(sql, {
-          $isPaid: order.isPaid, 
-          $createdAt: now.toISOString(), 
-          $updatedAt: now.toISOString(), 
-          $total: order.total 
+          $isPaid: order.isPaid,
+          $createdAt: now.toISOString(),
+          $updatedAt: now.toISOString(),
+          $total: order.total
         });
         if (res.lastInsertRowId == 0) throw Error("Nenhum pedido foi criado");
-        
+
         for (let item of order.items) {
           const lastId = await insertItemOrder(res.lastInsertRowId, item);
           if (lastId == 0) throw Error("Nenhum item foi adicionado ou pedido");
@@ -205,44 +205,45 @@ export function useDatabase() {
       });
       return Promise.resolve(lastId);
     }
-    catch (e) { 
+    catch (e) {
       console.error(e);
       Alert.alert("", "[error-db] Não foi possivel criar pedido");
       return Promise.reject(Error("Nào foi possivel criar pedido"))
     }
   }
-  
+
   async function updateOrder(order: Order) {
     let sql = [];
     for (let item of order.items) {
       sql.push(updateItemOrder(order.id!, item));
     };
-    
+
     sql.push(`
-      UPDATE 
-        orders 
-      SET 
-        isPaid = ${order.isPaid}, 
-        updatedAt = "${false ? new Date().toISOString() : "teste"}", 
+      UPDATE
+        orders
+      SET
+        isPaid = ${order.isPaid},
+        updatedAt = "${false ? new Date().toISOString() : "teste"}",
         total = ${order.total}
-      WHERE 
+      WHERE
         id = ${order.id}`
     );
     try {
       await db.withTransactionAsync(async () => {
         for (let s of sql) {
+          console.log(s)
           const res = await db.runAsync(s)
-          console.log("result: " + res.changes || res.lastInsertRowId)
+          console.log(`changes: ${res.changes}  lastId: ${res.lastInsertRowId}`)
         }
       });
-      return true; 
+      return true;
     }
-    
+
     catch (e) { Alert.alert("", "[error-db] Não foi possivel, criar pedido"); console.error(e) }
   }
-  
-  
-  async function fetchItemOrder(orderId?: number, onlyPaid?: boolean) { 
+
+
+  async function fetchItemOrder(orderId?: number, onlyPaid?: boolean) {
     try {
       let sql = "SELECT * FROM orders";
       if (orderId || onlyPaid) {
@@ -265,19 +266,19 @@ export function useDatabase() {
       });
       return orders;
     }
-    
+
     catch (e) { Alert.alert("", "[error-db] Não foi possivel consultar pedidos"); console.error(e) }
   }
-  
+
   async function fetchItemsByOrder(orderId: number, onlyByOrder: boolean) {
     try {
       const sub = `SELECT b.* FROM item_order b INNER JOIN orders c ON c.id = b.order_id WHERE order_id = ${orderId}`;
       console.log(await db.getAllAsync(sub))
       const sql = `
-        SELECT 
-          a.*, b.amount, b.id as item_order_id 
-        FROM 
-          items a 
+        SELECT
+          a.*, b.amount, b.id as item_order_id
+        FROM
+          items a
         LEFT JOIN
           (${sub}) b ON b.item_id = a.id
       `;
@@ -289,14 +290,14 @@ export function useDatabase() {
       });
       return Promise.resolve(itemsByNumber);
     }
-    catch (e) { 
-      Alert.alert("", "[error-db] Não foi possivel consultar pedidos"); 
+    catch (e) {
+      Alert.alert("", "[error-db] Não foi possivel consultar pedidos");
       console.error(e);
       return Promise.reject();
     }
   }
-  
-  
+
+
   async function query(s: string) {
     return new Promise<void>(res => {
       db.withExclusiveTransactionAsync(async tx => {
@@ -305,7 +306,7 @@ export function useDatabase() {
       })
     })
   }
-  
+
   async function deleteOrder(orderId: number) {
     return new Promise<void>(res => {
       db.withTransactionAsync(async () => {
@@ -318,15 +319,15 @@ export function useDatabase() {
           await db.execAsync(`DELETE FROM item_order WHERE order_id = ${orderId}`);
           await db.execAsync(`DELETE FROM orders WHERE id = ${orderId}`);
           res();
-        } catch (e) { 
+        } catch (e) {
           console.error(e);
-          return Promise.reject("Não foi possivel apagar os pedidos") 
+          return Promise.reject("Não foi possivel apagar os pedidos")
         }
       });
     })
-    
-    
+
+
   }
-  
+
   return { createItem, fetchItems, deleteAllItems, deleteItem, updateItem, createOrder, fetchItemOrder, query, updateOrder, fetchItemsByOrder, deleteOrder }
 }
