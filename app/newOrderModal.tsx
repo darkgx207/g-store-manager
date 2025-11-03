@@ -124,7 +124,7 @@ const NewOrderModal = (props: INewOrderProps) => {
   }
   
   const saveOrder = async () => {
-    // try {
+    try {
       let total = 0;
       const itemsToSave = items.filter(item => {
         if (item.itemOrderId && !item.quantity) return true;
@@ -151,11 +151,11 @@ const NewOrderModal = (props: INewOrderProps) => {
       const result = await db.updateOrder(order);
       Alert.alert("", result ? "Atualizado com Sucesso!" : "Não foi possivel atualizar o pedido")
       props.closeModal();
-    // }
-    // catch (e) { 
-      // Alert.alert("Error", "Não foi possivel salvar/atualizar o pedido");
-      // console.error(e);
-    // }
+    }
+    catch (e) { 
+      Alert.alert("Error", "Não foi possivel salvar/atualizar o pedido");
+      console.error(e);
+    }
   };
   
   useEffect(() => {

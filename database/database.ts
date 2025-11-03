@@ -67,7 +67,6 @@ export async function initDatabaseTest(db: SQLiteDatabase) {
             ` + 
             getMigrateSql() + ";"
         );
-
     } catch (error) { console.error("Impossivel gerar databaseInitTest", error) }
 }
 
@@ -79,7 +78,6 @@ export function useDatabase() {
           'INSERT INTO items (title, price, description, imgUri, sellingUnit) values ($title, $price, $description, $imgUri, $sellingUnit)'
         );
         try {
-            // convertMissingValuesToNull(item);
             const result = await stmt.executeAsync({ $title: item.title, $price: item.price, $description: item.description, $imgUri: item.imgUri, $sellingUnit: item.sellingUnit });
             Alert.alert("","Item registrado com sucesso");
             return result.lastInsertRowId;
@@ -129,9 +127,8 @@ export function useDatabase() {
     }
     
   async function insertItemOrder(orderId: number, item: ItemByNumber) {
-    const stmt = await db.prepareAsync(
-      `INSERT INTO item_order (item_id ,order_id ,price ,amount) values ($itemId, $orderId, $price, $amount)`
-    );
+    const sql = `INSERT INTO item_order (item_id ,order_id ,price ,amount) values ($itemId, $orderId, $price, $amount)`;
+    const stmt = await db.prepareAsync(sql);
     try {
       if (!item.id || !item.quantity) throw Error;
       const res = await stmt.executeAsync({
@@ -140,11 +137,16 @@ export function useDatabase() {
         $price: Number((item.price * item.quantity).toFixed(2)),
         $amount: item.quantity
       });
-      return res.lastInsertRowId;
+      return Promise.resolve(res.lastInsertRowId);
+      
+    } catch (e) {
+      console.error(e);
+      return Promise.reject(Error("Não foi possivel inserir o item no pedido"));
+      
+    } finally {
+      console.log(sql);
+      await stmt.finalizeAsync();
     }
-    
-    catch { throw Error }
-    finally { await stmt.finalizeAsync() }
   }
   
   function updateItemOrder(orderId: number, item: ItemByNumber) {
@@ -182,29 +184,32 @@ export function useDatabase() {
   
   
   async function createOrder(order: Order) {
-    const stmt = await db.prepareAsync(
-      'INSERT INTO orders (isPaid, createdAt, updatedAt, total) values ($isPaid, $createdAt, $updatedAt, $total)'
-    );
+    const sql = 'INSERT INTO orders (isPaid, createdAt, updatedAt, total) values ($isPaid, $createdAt, $updatedAt, $total)';
+    let lastId = 0;
     try {
-      const now = new Date();
-      const res = await stmt.executeAsync({
-        $isPaid: order.isPaid, 
-        $createdAt: now.toISOString(), 
-        $updatedAt: now.toISOString(), 
-        $total: order.total 
+      await db.withTransactionAsync(async () => {
+        const now = new Date();
+        const res = await db.runAsync(sql, {
+          $isPaid: order.isPaid, 
+          $createdAt: now.toISOString(), 
+          $updatedAt: now.toISOString(), 
+          $total: order.total 
+        });
+        if (res.lastInsertRowId == 0) throw Error("Nenhum pedido foi criado");
+        
+        for (let item of order.items) {
+          const lastId = await insertItemOrder(res.lastInsertRowId, item);
+          if (lastId == 0) throw Error("Nenhum item foi adicionado ou pedido");
+        }
+        lastId = res.lastInsertRowId;
       });
-      if (res.lastInsertRowId == 0) throw Error;
-      
-      for (let item of order.items) {
-        // if (!item.quantity) continue;
-        const lastId = await insertItemOrder(res.lastInsertRowId, item);
-        if (lastId == 0) throw Error;
-      }
-      return res.lastInsertRowId;
+      return Promise.resolve(lastId);
     }
-    
-    catch { Alert.alert("", "[error-db] Não foi possivel, criar pedido") }
-    finally { await stmt.finalizeAsync() }
+    catch (e) { 
+      console.error(e);
+      Alert.alert("", "[error-db] Não foi possivel criar pedido");
+      return Promise.reject(Error("Nào foi possivel criar pedido"))
+    }
   }
   
   async function updateOrder(order: Order) {
@@ -226,7 +231,6 @@ export function useDatabase() {
     try {
       await db.withTransactionAsync(async () => {
         for (let s of sql) {
-          console.log(s);
           const res = await db.runAsync(s)
           console.log("result: " + res.changes || res.lastInsertRowId)
         }
@@ -267,14 +271,15 @@ export function useDatabase() {
   
   async function fetchItemsByOrder(orderId: number, onlyByOrder: boolean) {
     try {
-      const sub = "(SELECT b.* FROM item_order b INNER JOIN orders c ON c.id = b.order_id)";
+      const sub = `SELECT b.* FROM item_order b INNER JOIN orders c ON c.id = b.order_id WHERE order_id = ${orderId}`;
+      console.log(await db.getAllAsync(sub))
       const sql = `
         SELECT 
           a.*, b.amount, b.id as item_order_id 
         FROM 
           items a 
         LEFT JOIN
-          ${sub} b ON b.item_id = a.id
+          (${sub}) b ON b.item_id = a.id
       `;
       const items = await db.getAllAsync<Partial<Item>>(sql);
       const itemsByNumber: ItemByNumber[] = [];
