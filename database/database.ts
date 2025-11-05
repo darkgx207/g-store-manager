@@ -7,6 +7,7 @@ import { ItemOrder } from "./models/ItemOrder";
 import { ItemByNumber } from "@/app/newOrderModal";
 import { OrderResume } from "./models/OrderResume";
 import { ItemOrderDto } from "./models/ItemOrderDto";
+import { ItemsReport } from "./models/Report";
 
 
 export async function initDatabase(db: SQLiteDatabase) {
@@ -243,14 +244,15 @@ export function useDatabase() {
   }
 
 
-  async function fetchItemOrder(orderId?: number, onlyPaid?: boolean) {
+  async function fetchItemOrder(orderId?: number, onlyPaid?: boolean, period?: { start: Date, end: Date }) {
     try {
-      let sql = "SELECT * FROM orders";
-      if (orderId || onlyPaid) {
-        sql += ` WHERE
-        ${orderId ? " id = " + orderId : ""}
-        ${onlyPaid ? " isPaid = true" : ""}`;
+      let sql = `SELECT * FROM orders WHERE isPaid = ${onlyPaid || false}`;
+      if (orderId) sql += ` AND id = ${orderId}`;
+      if (period) {
+        const { start, end } = handleDate(period);
+        sql += ` AND datetime(createdAt) BETWEEN date('${start}') AND date('${end}')`
       }
+      console.log(sql)
 
       const orders = await db.getAllAsync<OrderResume>(sql);
       await db.withTransactionAsync(async () => {
@@ -268,6 +270,20 @@ export function useDatabase() {
     }
 
     catch (e) { Alert.alert("", "[error-db] Não foi possivel consultar pedidos"); console.error(e) }
+  }
+
+  function handleDate(period: { start: Date, end: Date }) {
+    let start_ = period.start.toISOString();
+    let end_ = period.end.toISOString();
+
+    if (start_ == end_) {
+      const aux = period.end;
+      aux.setDate(aux.getDate() + 1);
+      end_ = aux.toISOString();
+    }
+    console.log(start_)
+    console.log(end_)
+    return { start: start_, end: end_ };
   }
 
   async function fetchItemsByOrder(orderId: number, onlyByOrder: boolean) {
@@ -307,6 +323,39 @@ export function useDatabase() {
     })
   }
 
+  async function reportByPeriod(start: Date, end: Date) {
+    let start_ = start.toISOString();
+    let end_ = end.toISOString();
+
+    if (start_ == end_) {
+      const aux = end;
+      aux.setDate(aux.getDate() + 1);
+      end_ = aux.toISOString();
+    }
+
+
+    const sql = `
+      SELECT
+        T1.title as title,
+        T1.sellingUnit as un,
+        SUM(T3.amount) AS quantity
+      FROM items AS T1
+      JOIN
+        item_order AS T3 ON T1.id = T3.item_id
+      JOIN
+        orders AS T2 ON T3.order_id = T2.id
+      WHERE
+        datetime(T2.createdAt) BETWEEN date('${start_}') AND date('${end_}') AND T2.isPaid = true
+      GROUP BY
+        T1.id, T1.title, T1.sellingUnit
+      ORDER BY
+        total DESC;
+      `;
+
+    const items = await db.getAllAsync<ItemsReport>(sql);
+    return items;
+  }
+
   async function deleteOrder(orderId: number) {
     return new Promise<void>(res => {
       db.withTransactionAsync(async () => {
@@ -325,9 +374,32 @@ export function useDatabase() {
         }
       });
     })
-
-
   }
 
-  return { createItem, fetchItems, deleteAllItems, deleteItem, updateItem, createOrder, fetchItemOrder, query, updateOrder, fetchItemsByOrder, deleteOrder }
+  async function setOrderAsPaid(orderId: number) {
+    let changes = 0;
+    await db.withTransactionAsync(async () => {
+      const sql = `UPDATE orders SET isPaid = true WHERE id = ${orderId}`;
+      console.log(sql)
+      const res = await db.runAsync(sql);
+      changes = res.changes;
+    });
+    return changes > 0;
+  }
+
+  return {
+    createItem,
+    fetchItems,
+    deleteAllItems,
+    deleteItem,
+    updateItem,
+    createOrder,
+    fetchItemOrder,
+    query,
+    updateOrder,
+    fetchItemsByOrder,
+    deleteOrder,
+    reportByPeriod,
+    setOrderAsPaid,
+  }
 }

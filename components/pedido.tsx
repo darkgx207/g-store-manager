@@ -1,3 +1,4 @@
+import { useDatabase } from "@/database/database";
 import { OrderResume } from "@/database/models/OrderResume";
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 
@@ -13,12 +14,13 @@ interface ICustomText {
 
 interface IPedidoProps {
   order: OrderResume
-  editOrder?: (id?: number) => void 
+  editOrder?: (id?: number) => void
+  confirmPayment?: () => void
 }
 
 function Textc({ content, opts }: ICustomText) {
   return (
-    <Text 
+    <Text
       numberOfLines={2}
       style={{
       color: opts?.color || "#000",
@@ -33,27 +35,38 @@ function Textc({ content, opts }: ICustomText) {
 
 // Buscar todos os pedidos em aberto do banco de dados.
 export function Pedido(props: IPedidoProps) {
-  
-  const confirmPayment = () => {
-    const buttons = [{ text: "Sim", onPress: () => { } }, { text: "Não", onPress: () => { } }];
+  const db = useDatabase();
+
+  const confirmPayment = async () => {
+    if (!props.order.id) return;
+    const res = await db.setOrderAsPaid(props.order.id);
+    if (!res) {
+      Alert.alert("", "Não foi possivel atualizar pedido");
+      return;
+    }
+    props.confirmPayment?.();
+  }
+
+  const handleConfirmPayment = () => {
+    const buttons = [{ text: "Sim", onPress: () => { confirmPayment() } }, { text: "Não", onPress: () => { } }];
     Alert.alert("", "Tem certeza que deseja confirmar o pagamento?", buttons, { cancelable: true });
   }
-  
+
   const showOrder = () => {
     props.editOrder?.(props.order.id);
   }
-  
+
   const getItensResume = (): string => {
     let resume = "";
     const size = props.order.items?.length;
-    
+
     props.order.items?.forEach((it, i) => {
       resume += `${it.title}(${it.quantity})${(i+1 == size) ? "" : ", "}`;
     });
-    
+
     return resume;
   }
-  
+
   return (
     <View style={styles.container}>
       <View style={styles.innerContainer}>
@@ -61,9 +74,9 @@ export function Pedido(props: IPedidoProps) {
           <Textc content={`Identificador: ${props.order.id}`} opts={{weight: "800"}}/>
           <Textc content={getItensResume()} />
         </View>
-        
+
         <View style={styles.centralBtnLayout}>
-          <TouchableOpacity style={styles.centralBtn} onPress={confirmPayment}>
+          <TouchableOpacity style={styles.centralBtn} onPress={handleConfirmPayment}>
             <Textc content="Confirmar pagamento" opts={{fontSize: 14, color: "#fff"}} />
           </TouchableOpacity>
           <TouchableOpacity style={[styles.centralBtn, {backgroundColor: "#000"}]} onPress={showOrder}>
@@ -74,7 +87,7 @@ export function Pedido(props: IPedidoProps) {
           </View>
         </View>
       </View>
-      
+
     </View>
   );
 }
@@ -103,7 +116,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     gap: 10
   },
-  centralBtn: { 
+  centralBtn: {
     backgroundColor: "green",
     padding: 8,
     borderRadius: 10

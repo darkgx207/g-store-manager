@@ -6,8 +6,8 @@ export default function RootLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: 'white', 
-        headerShown: false, 
+        tabBarActiveTintColor: 'white',
+        headerShown: false,
         tabBarStyle: {
           backgroundColor: '#000',
           borderColor: 'lightgreen',
@@ -20,8 +20,8 @@ export default function RootLayout() {
         lazy: true,
       }}
     >
-      <Tabs.Screen 
-        name="catalogo" 
+      <Tabs.Screen
+        name="catalogo"
         options={{
           tabBarLabel: 'Catalogo',
           tabBarIcon: ({ color, focused }) => (
@@ -31,7 +31,7 @@ export default function RootLayout() {
           )
       }}/>
 
-      <Tabs.Screen 
+      <Tabs.Screen
         name="index"
         options={{
           tabBarLabel: "Inicio",
@@ -43,10 +43,10 @@ export default function RootLayout() {
         }}
       />
 
-      <Tabs.Screen 
-        name="page2" 
+      <Tabs.Screen
+        name="report"
         options={{
-          tabBarLabel: 'Perfil',
+          tabBarLabel: 'Relatório',
           tabBarIcon: ({ focused, color }) => (
             <View style={focused ? styles.focused : {} }>
               <FontAwesome size={24} name="address-card" color={color}/>

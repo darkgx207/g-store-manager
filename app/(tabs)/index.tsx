@@ -13,16 +13,16 @@ export default function Index() {
   const [showOrderModal, setShowOrderModal] = useState(false);
   const [orders, setOrders] = useState<OrderResume[]>([]);
   const [selected, setSelected] = useState<number | undefined>(undefined);
-  
+
   const fetchItemOrder = async() => {
     const res = (await db.fetchItemOrder(0, false)) || [];
     setOrders(res)
   };
-  
+
   useEffect(() => {
     fetchItemOrder();
   }, []);
-  
+
   return (
     <View style={styles.center}>
       {/* Pedidos em aberto */}
@@ -30,7 +30,7 @@ export default function Index() {
         <Text style={{fontSize: 18, fontWeight: 600, marginLeft: 20 }}>Pedidos em aberto</Text>
         <ScrollView style={styles.onGoingItems}>
           {orders.map((order, i) => (
-            <Pedido order={order} key={String(i)} editOrder={setSelected}/>
+            <Pedido order={order} key={String(i)} editOrder={setSelected} confirmPayment={fetchItemOrder}/>
           ))}
         </ScrollView>
       </View>
@@ -39,9 +39,12 @@ export default function Index() {
       <View style={{ margin: 5, marginTop: 20 }}>
         <Button title="Novo pedido" color='green' onPress={() => setShowOrderModal(!showOrderModal)}/>
       </View>
-      
+
       <Modal visible={showOrderModal || selected != undefined} presentationStyle="formSheet" animationType="slide">
-        <NewOrderModal closeModal={() => { setShowOrderModal(false); setSelected(undefined); fetchItemOrder() }} orderId={selected} />
+        <NewOrderModal
+          closeModal={() => { setShowOrderModal(false); setSelected(undefined); fetchItemOrder() }}
+          orderId={selected}
+        />
       </Modal>
     </View>
   );
