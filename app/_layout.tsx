@@ -23,7 +23,7 @@ export default function mainContainer() {
         style={theme === "dark" ? "dark" : "light"}
         translucent={false}
       />
-      <SQLiteProvider databaseName="database.db" onInit={initDatabaseTest}>
+      <SQLiteProvider databaseName="database.db" onInit={initDatabase}>
         <Stack screenOptions={{ animation: "slide_from_bottom" }}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         </Stack>

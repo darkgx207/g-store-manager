@@ -75,19 +75,19 @@ export default function Report() {
             <View>
               <Text>Inicio: </Text>
               <DatePicker
-              value={inicio}
-              mode="date"
-              timeZoneName="pt_BR"
-              onChange={(event, value) => handleUpdateDate(event, value, 'INICIO')}
+                value={inicio}
+                mode="date"
+                timeZoneName="pt_BR"
+                onChange={(event, value) => handleUpdateDate(event, value, 'INICIO')}
               />
             </View>
             <View>
               <Text>Fim: </Text>
               <DatePicker
-              value={fim}
-              mode="date"
-              timeZoneName="pt_BR"
-              onChange={(event, value) => handleUpdateDate(event, value, 'FIM')}
+                value={fim}
+                mode="date"
+                timeZoneName="pt_BR"
+                onChange={(event, value) => handleUpdateDate(event, value, 'FIM')}
               />
             </View>
           </View>
