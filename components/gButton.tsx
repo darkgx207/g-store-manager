@@ -1,4 +1,4 @@
-import { TouchableOpacity, Text, StyleProp, ViewStyle, Touchable } from "react-native";
+import { TouchableOpacity, Text, StyleProp, ViewStyle } from "react-native";
 
 type Props = {
     text: string,
@@ -10,7 +10,7 @@ type Props = {
 
 export default function GButton(props: Props) {
     return (
-        <TouchableOpacity 
+        <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => props.onPress?.()}
             style={[
@@ -24,4 +24,3 @@ export default function GButton(props: Props) {
         </TouchableOpacity>
     );
 }
-

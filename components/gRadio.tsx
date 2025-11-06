@@ -1,5 +1,4 @@
 
-import { UnidadeVendas } from '@/constants/constantValues';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
@@ -30,9 +29,9 @@ export function RadioButton({ label, selected, onSelect }: IRadioButtonProps ) {
 
 export function RadioSelect(props: IRadioSelectProps) {
   const [selectedValue, setSelectedValue] = useState(props.defaultValue || props.options[0]);
-  
+
   useEffect(() => {
-    const currentValue = selectedValue; 
+    const currentValue = selectedValue;
     props.onChange(currentValue);
   }, [selectedValue]);
 

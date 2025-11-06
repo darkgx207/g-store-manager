@@ -1,4 +1,4 @@
-import { SQLiteDatabase, SQLiteStatement, useSQLiteContext } from "expo-sqlite"
+import { SQLiteDatabase, useSQLiteContext } from "expo-sqlite";
 import { Item, mapperItemToItemByNumber } from "./models/Item";
 import { Alert } from "react-native";
 import { getMigrateSql } from "./fakeDataMigration";
@@ -145,7 +145,6 @@ export function useDatabase() {
       return Promise.reject(Error("Não foi possivel inserir o item no pedido"));
 
     } finally {
-      console.log(sql);
       await stmt.finalizeAsync();
     }
   }
@@ -232,9 +231,7 @@ export function useDatabase() {
     try {
       await db.withTransactionAsync(async () => {
         for (let s of sql) {
-          console.log(s)
           const res = await db.runAsync(s)
-          console.log(`changes: ${res.changes}  lastId: ${res.lastInsertRowId}`)
         }
       });
       return true;
@@ -243,16 +240,30 @@ export function useDatabase() {
     catch (e) { Alert.alert("", "[error-db] Não foi possivel, criar pedido"); console.error(e) }
   }
 
+  async function getOrdersSum(start: string, end: string) {
+    const sql = `
+      SELECT
+        SUM(total) as max
+      FROM
+        orders
+      WHERE
+        isPaid = true
+      AND
+        datetime(createdAt) BETWEEN date('${start}') AND date('${end}')
+    `;
+    return await db.getFirstAsync<number>(sql) || 0;
+  }
 
   async function fetchItemOrder(orderId?: number, onlyPaid?: boolean, period?: { start: Date, end: Date }) {
+    let sum = 0;
     try {
       let sql = `SELECT * FROM orders WHERE isPaid = ${onlyPaid || false}`;
       if (orderId) sql += ` AND id = ${orderId}`;
       if (period) {
         const { start, end } = handleDate(period);
+        sum = await getOrdersSum(start, end);
         sql += ` AND datetime(createdAt) BETWEEN date('${start}') AND date('${end}')`
       }
-      console.log(sql)
 
       const orders = await db.getAllAsync<OrderResume>(sql);
       await db.withTransactionAsync(async () => {
@@ -264,6 +275,7 @@ export function useDatabase() {
             itemOrderDto.push(ItemOrder.toItemOrderDto(it, (it as any).title, order.isPaid));
           });
           order.items = itemOrderDto;
+          (order as any).sum = sum;
         }
       });
       return orders;
@@ -281,15 +293,12 @@ export function useDatabase() {
       aux.setDate(aux.getDate() + 1);
       end_ = aux.toISOString();
     }
-    console.log(start_)
-    console.log(end_)
     return { start: start_, end: end_ };
   }
 
   async function fetchItemsByOrder(orderId: number, onlyByOrder: boolean) {
     try {
       const sub = `SELECT b.* FROM item_order b INNER JOIN orders c ON c.id = b.order_id WHERE order_id = ${orderId}`;
-      console.log(await db.getAllAsync(sub))
       const sql = `
         SELECT
           a.*, b.amount, b.id as item_order_id
@@ -380,7 +389,6 @@ export function useDatabase() {
     let changes = 0;
     await db.withTransactionAsync(async () => {
       const sql = `UPDATE orders SET isPaid = true WHERE id = ${orderId}`;
-      console.log(sql)
       const res = await db.runAsync(sql);
       changes = res.changes;
     });

@@ -10,7 +10,7 @@
 # Relatorios de vendas
 - [X]Criar funcionalidade para buscar valor de vendas em periodo especifico.
 - [X]Criar tela de relatório
-- [ ]Criar relatorio dos pedidos + resumo de venda de itens
+- [x]Criar relatorio dos pedidos + resumo de venda de itens
 
 
 # newOrderModal
@@ -20,11 +20,4 @@
 
 # Bugs
 - [x]UpdateOrder não está atualizando o campo quantity em Items
-- [ ]Item de pedidos estão se somando
-
-
-
-SELECT
-
-FROM
-  orders
+- [x]Item de pedidos estão se somando
