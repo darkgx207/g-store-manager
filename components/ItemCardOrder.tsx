@@ -17,30 +17,30 @@ const textPricebySellingUnit = (unit: (typeof UnidadeVendas)[keyof typeof Unidad
 
 export default function ItemCardOrder(props: IItemCardOrderProps) {
   const quantity = props.item.quantity || 0;
-  
+
   const setQuantity = (value: number) => {
     props.updateQuantity(value);
   };
-  
+
   const quantityText = quantity > 0 ? String(quantity) : '';
-  
+
   const setQuantityByText = (value: string) => {
     const res = Number(value);
     setQuantity(Number.isNaN(res) ? 0 : res);
   };
-  
+
   const addByUnit = (subtract?: boolean ) => {
     const increment = subtract ? -1 : 1;
     let result = 0;
-    
+
     if (props.item.sellingUnit == "Unidade")
-      result = quantity + increment; 
+      result = quantity + increment;
     else
       result = Number((quantity + (increment / 10)).toFixed(1))
 
     setQuantity(result < 0.0 ? 0 : result);
   }
-  
+
   return (
     <View style={style.card}>
       <View style={{ flex: 0.4 }}>
@@ -53,7 +53,7 @@ export default function ItemCardOrder(props: IItemCardOrderProps) {
           <TouchableOpacity activeOpacity={.5} onPress={() => addByUnit()}>
             <Ionicons name="add-circle-outline" color={"#00fa70"} style={style.button} />
           </TouchableOpacity>
-          <TextInput style={{ width: 50, color: "#fff", textAlign: "center" }}
+          <TextInput style={{width: 50, color: "#fff", textAlign: "center" }}
             maxLength={4}
             keyboardType="numeric"
             value={quantityText}
@@ -90,7 +90,7 @@ const style = StyleSheet.create({
   price: {
     color: '#fff',
     marginLeft: 10,
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 'semibold',
     textAlignVertical: 'bottom',
   },
@@ -107,7 +107,8 @@ const style = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginHorizontal: 30
+    marginHorizontal: 30,
+    backgroundColor: "#dedede55" // Remover
   },
   button: {
     // color: "#fff",
