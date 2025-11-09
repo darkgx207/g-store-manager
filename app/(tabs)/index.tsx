@@ -4,6 +4,7 @@ import NewOrderModal from "../newOrderModal";
 import { useEffect, useState } from "react";
 import { useDatabase } from "@/database/database";
 import { OrderResume } from "@/database/models/OrderResume";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const WIDTH = Dimensions.get("screen").width;
 const HEIGHT = Dimensions.get("screen").height;
@@ -41,10 +42,12 @@ export default function Index() {
       </View>
 
       <Modal visible={showOrderModal || selected != undefined} presentationStyle="formSheet" animationType="slide">
-        <NewOrderModal
-          closeModal={() => { setShowOrderModal(false); setSelected(undefined); fetchItemOrder() }}
-          orderId={selected}
-        />
+        <SafeAreaView style={{ flex: 1 }}>
+          <NewOrderModal
+            closeModal={() => { setShowOrderModal(false); setSelected(undefined); fetchItemOrder() }}
+            orderId={selected}
+          />
+        </SafeAreaView>
       </Modal>
     </View>
   );

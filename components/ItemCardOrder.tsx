@@ -107,8 +107,7 @@ const style = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginHorizontal: 30,
-    backgroundColor: "#dedede55" // Remover
+    marginHorizontal: 30
   },
   button: {
     // color: "#fff",
