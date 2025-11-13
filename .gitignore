@@ -41,3 +41,6 @@ app-example
 .idea
 .vscode
 android
+
+# custom
+todo.md
