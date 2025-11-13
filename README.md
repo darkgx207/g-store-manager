@@ -1,50 +1,72 @@
-# Welcome to your Expo app 👋
+# 💻 G-Store Manager: Simple Sales Management App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+---
 
-## Get started
+## ✨ Overview
 
-1. Install dependencies
+The **G-Store Manager** is a mobile application designed to simplify sales management for **small businesses** and **bakeries**. Built using **React Native**, it provides a streamlined, intuitive experience for managing daily operations.
 
-   ```bash
-   npm install
-   ```
+This project was developed as a key requirement for a university course, demonstrating proficiency in mobile application development and practical business solutions.
 
-2. Start the app
+---
 
-   ```bash
-    npx expo start
-   ```
+## 🚀 Key Features
 
-In the output, you'll find options to open the app in a
+* **Product Catalog:** Easily maintain an up-to-date catalog of items and prices.
+* **Order Management (Comanda/Ticket):** Simple interface for registering customer orders and tracking active sales.
+* **Sales Reporting:** Generate reports on total sales and the quantity of items sold per transaction over a specified period.
+* **Cross-Platform:** Developed with React Native to ensure compatibility across different mobile devices (iOS and Android).
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 🛠️ Technology Stack
 
-## Get a fresh project
+* **Framework:** React Native
+* **Language:** JavaScript / TypeScript (if applicable)
 
-When you're ready, run:
+---
 
-```bash
-npm run reset-project
-```
+## ⚙️ Installation
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+To run the **G-Store Manager** locally, follow these steps. Make sure you have Node.js, npm/Yarn, and the React Native environment set up on your machine.
 
-## Learn more
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/darkgx207/g-store-manager
+    cd g-store-manager
+    ```
 
-To learn more about developing your project with Expo, look at the following resources:
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+3.  **Run the application (for development):**
 
-## Join the community
+    * **iOS:**
+        ```bash
+        npx react-native run-ios
+        ```
+    * **Android:**
+        ```bash
+        npx react-native run-android
+        ```
 
-Join our community of developers creating universal apps.
+    *(Note: You may need to have a running emulator or a connected physical device for these commands.)*
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+---
+
+## 🖥️ How to Use
+
+The app is designed for ease of use by small business owners and staff:
+
+1.  **Catalog Setup:**
+    * Navigate to the **Catalog** screen to add, edit, or remove products (e.g., bread, cakes, coffees).
+2.  **Creating a New Sale (Comanda):**
+    * On the main **Sales** screen, start a new `Comanda` (order ticket).
+    * Select items from the catalog to add them to the current sale.
+    * Finalize the sale and record the payment method.
+3.  **Viewing Reports:**
+    * Go to the **Reports** section.
+    * Select a specific date range.
+    * View summarized data on total revenue and item quantities sold to track business performance.
