@@ -223,7 +223,7 @@ export function useDatabase() {
         orders
       SET
         isPaid = ${order.isPaid},
-        updatedAt = "${false ? new Date().toISOString() : "teste"}",
+        updatedAt = "${new Date().toISOString()}",
         total = ${order.total}
       WHERE
         id = ${order.id}`
@@ -395,6 +395,18 @@ export function useDatabase() {
     return changes > 0;
   }
 
+  async function resetDatabase() {
+    await db.withTransactionAsync(async () => {
+      const sql = `
+        DROP TABLE items;
+        DROP TABLE orders;
+        DROP TABLE item_order;
+      `;
+      await db.runAsync(sql);
+      await initDatabase(db);
+    })
+  }
+
   return {
     createItem,
     fetchItems,
@@ -409,5 +421,6 @@ export function useDatabase() {
     deleteOrder,
     reportByPeriod,
     setOrderAsPaid,
+    resetDatabase
   }
 }

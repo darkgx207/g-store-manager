@@ -45,57 +45,64 @@ const style = `
 
 export function WebViewReport(props: IWebViewReportProps) {
   const generateTable = () => {
-    let str = "";
-    props.report?.forEach(r => {
-      const pedido = r.id || "indefinido";
-      const total = r.total;
-      const datetime = String((r.updatedAt || r.createdAt || 'xxxx-xx-xxT00:00:00')).split('T');
-      const date = datetime[0].replace(/\-/g, '/');
-      const hrs = datetime[1].slice(0, 8);
-
-      str += `
-        <table style="font-size: 15pt">
-        <thead>
-          <tr class="header-pedido">
-            <td colspan="3">Pedido: ${pedido}</td>
-          </tr>
-          <tr>
-            <td>${date} - ${hrs}</td>
-            <td class="quantity"><b>Qnt</b></td>
-            <td class="price"><b>Preço</b></td>
-          </tr>
-        </thead>
-      <tbody>`;
-
-      r.items?.forEach(i => {
-        const title = i.title;
-        const qnt = i.quantity;
-        const price = i.total;
+    try {
+      let str = "";
+      props.report?.forEach(r => {
+        const pedido = r.id || "indefinido";
+        const total = r.total;
+        const datetime = String((r.updatedAt || r.createdAt || 'xxxx-xx-xxT00:00:00')).split('T');
+        const date = datetime[0].replace(/\-/g, '/');
+        const hrs = datetime[1].slice(0, 8) || "";
 
         str += `
-        <tr>
-          <td class="item-name">${title}</td>
-          <td class="quantity">${qnt}</td>
-          <td class="price">${price}</td>
-        </tr>`;
-      });
+          <table style="font-size: 15pt">
+          <thead>
+            <tr class="header-pedido">
+              <td colspan="3">Pedido: ${pedido}</td>
+            </tr>
+            <tr>
+              <td>${date} - ${hrs}</td>
+              <td class="quantity"><b>Qnt</b></td>
+              <td class="price"><b>Preço</b></td>
+            </tr>
+          </thead>
+        <tbody>`;
+
+        r.items?.forEach(i => {
+          const title = i.title;
+          const qnt = i.quantity;
+          const price = i.total;
+
+          str += `
+          <tr>
+            <td class="item-name">${title}</td>
+            <td class="quantity">${qnt}</td>
+            <td class="price">${price}</td>
+          </tr>`;
+        });
+        str += `
+        </tbody>
+        <tfoot>
+          <tr class="total-row">
+            <td colspan="1" style="border: none;"></td> <td class="total-row-label">Total (R$)</td>
+            <td class="price">${total}</td>
+          </tr>
+        </tfoot>
+        </table>
+        <br><br>`;
+      })
       str += `
-      </tbody>
-      <tfoot>
-        <tr class="total-row">
-          <td colspan="1" style="border: none;"></td> <td class="total-row-label">Total (R$)</td>
-          <td class="price">${total}</td>
-        </tr>
-      </tfoot>
-      </table>
-      <br><br>`;
-    })
-    str += `
-      <pre>
-        -------------------------------------------------
-        Valor acumulado por periodo: R$ ${(props.report?.[0] as any).sum.max}
-      </pre>`
-    return str;
+        <pre>
+          -------------------------------------------------
+          Valor acumulado por periodo: R$ ${(props.report?.[0] as any).sum.max}
+        </pre>`
+      return str;
+    }
+    catch (e) {
+      console.error(e);
+      return "<h2>Ocorreu um erro interno na aplicação</h2>"
+    }
+
   };
 
   const html = `
