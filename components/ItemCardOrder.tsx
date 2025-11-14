@@ -53,11 +53,12 @@ export default function ItemCardOrder(props: IItemCardOrderProps) {
           <TouchableOpacity activeOpacity={.5} onPress={() => addByUnit()}>
             <Ionicons name="add-circle-outline" color={"#00fa70"} style={style.button} />
           </TouchableOpacity>
-          <TextInput style={{width: 50, color: "#fff", textAlign: "center" }}
+          <TextInput style={{width: 50, color: "#fff", textAlign: "center", height: 50 }}
             maxLength={4}
             keyboardType="numeric"
             value={quantityText}
             onChangeText={setQuantityByText}
+            allowFontScaling={false}
           />
           <TouchableOpacity activeOpacity={ quantity > 0 ? .5 : 1} onPress={() => addByUnit(true) }>
             <Ionicons name="remove-circle-outline" color={"red"} style={[style.button, quantity <= 0 && {color: "#555f"}]} />

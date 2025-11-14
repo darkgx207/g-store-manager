@@ -5,7 +5,6 @@ import { Order } from "@/database/models/Order";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { Alert, Button, FlatList, ScrollView, StyleSheet, Text, TextInput, TextInputSubmitEditingEvent, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 interface INewOrderProps {
   closeModal: () => void,
