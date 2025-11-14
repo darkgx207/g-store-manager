@@ -342,12 +342,12 @@ export function useDatabase() {
       end_ = aux.toISOString();
     }
 
-
     const sql = `
       SELECT
         T1.title as title,
         T1.sellingUnit as un,
-        SUM(T3.amount) AS quantity
+        SUM(T3.amount) AS quantity,
+        T1.price as price
       FROM items AS T1
       JOIN
         item_order AS T3 ON T1.id = T3.item_id
@@ -362,6 +362,9 @@ export function useDatabase() {
       `;
 
     const items = await db.getAllAsync<ItemsReport>(sql);
+    items.forEach((i, index) => {
+      items[index].revenue = ((i.quantity || 0) * (i as any).price);
+    })
     return items;
   }
 
@@ -402,7 +405,7 @@ export function useDatabase() {
         DROP TABLE orders;
         DROP TABLE item_order;
       `;
-      await db.runAsync(sql);
+      await db.execAsync(sql);
       await initDatabase(db);
     })
   }

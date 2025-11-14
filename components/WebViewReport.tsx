@@ -1,11 +1,14 @@
+import { ItemOrderDto } from "@/database/models/ItemOrderDto";
 import { OrderResume } from "@/database/models/OrderResume";
+import { ItemsReport } from "@/database/models/Report";
 import { View, StyleSheet } from "react-native";
 import { WebView } from "react-native-webview";
 
 interface IWebViewReportProps {
   report?: OrderResume[],
   inicio: string,
-  fim: string
+  fim: string,
+  itemsReport?: ItemsReport[]
 }
 
 const style = `
@@ -44,6 +47,41 @@ const style = `
 `;
 
 export function WebViewReport(props: IWebViewReportProps) {
+  const generateItemsTable = () => {
+    const itemsReport = props.itemsReport;
+    if (!itemsReport) return "";
+
+    let str = `
+      <table style="font-size: 15pt">
+      <thead>
+        <tr class="header-pedido" style="color: red">
+          <td colspan="3">Items Vendidos</td>
+        </tr>
+        <tr>
+          <td class="quantity"><b>Nome</b></td>
+          <td class="quantity"><b>Qnt</b></td>
+          <td class="price"><b>valor total vendido (R$) </b></td>
+        </tr>
+      </thead>
+      <tbody>
+    `;
+
+    itemsReport.forEach(i => {
+      str += `
+        <tr>
+          <td class="item-name">${i.title}</td>
+          <td class="quantity">${i.quantity} ${i.un?.slice(0,2)}</td>
+          <td class="price">${i.revenue?.toFixed(2)}</td>
+        </tr>`;
+    });
+
+    str += `
+      </tbody>
+      </table>
+    `;
+    return str;
+  }
+
   const generateTable = () => {
     try {
       let str = "";
@@ -63,10 +101,10 @@ export function WebViewReport(props: IWebViewReportProps) {
             <tr>
               <td>${date} - ${hrs}</td>
               <td class="quantity"><b>Qnt</b></td>
-              <td class="price"><b>Preço</b></td>
+              <td class="price"><b>Total</b></td>
             </tr>
           </thead>
-        <tbody>`;
+          <tbody>`;
 
         r.items?.forEach(i => {
           const title = i.title;
@@ -77,7 +115,7 @@ export function WebViewReport(props: IWebViewReportProps) {
           <tr>
             <td class="item-name">${title}</td>
             <td class="quantity">${qnt}</td>
-            <td class="price">${price}</td>
+            <td class="price">${price.toFixed(2)}</td>
           </tr>`;
         });
         str += `
@@ -85,41 +123,42 @@ export function WebViewReport(props: IWebViewReportProps) {
         <tfoot>
           <tr class="total-row">
             <td colspan="1" style="border: none;"></td> <td class="total-row-label">Total (R$)</td>
-            <td class="price">${total}</td>
+            <td class="price">${total.toFixed(2)}</td>
           </tr>
         </tfoot>
         </table>
         <br><br>`;
-      })
+      });
       str += `
+        ${generateItemsTable()}
+        <br><br>
         <pre>
           -------------------------------------------------
-          Valor acumulado por periodo: R$ ${(props.report?.[0] as any).sum.max}
-        </pre>`
+          Valor acumulado por periodo: R$ ${((props.report?.[0] as any).sum.max as number).toFixed(2)}
+        </pre>
+      `;
       return str;
     }
     catch (e) {
       console.error(e);
       return "<h2>Ocorreu um erro interno na aplicação</h2>"
     }
-
   };
 
   const html = `
-<html>
-  <head>
-    ${style}
-  </head>
-  <body style="background-color: white; font-size: 2rem">
-    <pre><b>Relatório de vendas</b>\n(${props.inicio} até ${props.fim})</pre>
-    <hr/>
-    ${!(props.report && props.report.length) ?
-      '<pre> Nenhum registro encontrado neste periodo.</pre>' : generateTable()
-    }
-
-  </body>
-</html>
-`;
+    <html>
+      <head>
+        ${style}
+      </head>
+      <body style="background-color: white; font-size: 2rem">
+        <pre><b>Relatório de vendas</b>\n(${props.inicio} até ${props.fim})</pre>
+        <hr/>
+        ${!(props.report && props.report.length) ?
+          '<pre> Nenhum registro encontrado neste periodo.</pre>' : generateTable()
+        }
+      </body>
+    </html>
+  `;
 
   return (
     <View style={styles.container}>

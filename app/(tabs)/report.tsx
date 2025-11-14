@@ -5,6 +5,7 @@ import GButton from "@/components/gButton";
 import { WebViewReport } from "@/components/WebViewReport";
 import { useDatabase } from "@/database/database";
 import { OrderResume } from "@/database/models/OrderResume";
+import { ItemsReport } from "@/database/models/Report";
 
 
 export default function Report() {
@@ -15,6 +16,7 @@ export default function Report() {
   const [showCalendar, setShowCalendar] = useState(false);
   const [currentDate, setCurrentDate] = useState<'INICIO'|'FIM'|undefined>(undefined);
   const [report, setReport] = useState<OrderResume[]>([])
+  const [itemReport, setItemReport] = useState<ItemsReport[]>([])
 
   const handleChangeDateButton = (current: 'INICIO'|'FIM') => {
     setCurrentDate(current);
@@ -43,7 +45,10 @@ export default function Report() {
 
   const fetchReport = async () => {
     const r = await db.fetchItemOrder(undefined, true, { start: inicio, end: fim });
-    setReport(r || [])
+    setReport(r || []);
+
+    const ir = await db.reportByPeriod(inicio, fim);
+    setItemReport(ir || []);
   }
 
 
@@ -108,6 +113,7 @@ export default function Report() {
         inicio = {inicio.toLocaleDateString()}
         fim = {fim.toLocaleDateString()}
         report={report}
+        itemsReport={itemReport}
       />
     </View>
   );
